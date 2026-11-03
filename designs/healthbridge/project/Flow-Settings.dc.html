@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>设置的二级页面与确认</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 3119px; height: 968px; box-sizing: border-box; padding: 40px; display: flex; gap: 48px; align-items: flex-start; background: #E5E5EA; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; color: #1C1C1E">
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">S1 服务器配置</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="settings" page="server" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">S2 数据类型 · 关闭某类时确认</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="settings" page="types" dialog="typeoff" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">S3 连接 AI Agent</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="settings" page="agent" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">S4 数据共享同意（查看）</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="settings" page="consent" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">S4 撤回同意的确认</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="settings" page="consent" dialog="revoke" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">S5 删除服务器数据 · 二次确认</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="settings" page="delete" dialog="delete" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">S6 断开连接</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="settings" page="disconnect" hint-size="393px,852px"></dc-import></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":3119,"height":968}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

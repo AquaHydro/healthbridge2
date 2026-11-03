@@ -1,0 +1,32 @@
+{
+  "name": "healthbridge2",
+  "version": "0.0.0",
+  "private": true,
+  "description": "HealthKit to personal AI agents, on your own infrastructure.",
+  "workspaces": [
+    "server"
+  ],
+  "engines": {
+    "node": ">=24 <27"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace server",
+    "typecheck": "npm run typecheck --workspace server",
+    "test": "npm run test --workspace server",
+    "build": "npm run build --workspace server",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run format:check && npm run typecheck && npm test && npm run build",
+    "deploy": "node scripts/deploy.mjs"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
+  },
+  "cloudflare": {
+    "bindings": {
+      "CONNECT_PASSWORD": {
+        "description": "\u9996\u6b21\u8fde\u63a5\u53e3\u4ee4\uff1a\u81f3\u5c11 16 \u4e2a\u5b57\u7b26\uff0c\u8bf7\u4fdd\u5b58\u5728\u5bc6\u7801\u7ba1\u7406\u5668\u3002\u90e8\u7f72\u540e\u7528\u4e8e\u8fde\u63a5 iPhone\u3002\u5176\u4f59\u51ed\u636e\u7531\u90e8\u7f72\u811a\u672c\u81ea\u52a8\u751f\u6210\u3002"
+      }
+    }
+  }
+}

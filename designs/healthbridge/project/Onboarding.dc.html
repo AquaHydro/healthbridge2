@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>HealthBridge 引导流程</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.ob-app button{transition:transform 140ms ease-out,background-color 180ms ease-out}
+.ob-app button:active:not(:disabled){transform:scale(.975)}
+@keyframes ob-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ob-reveal{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:no-preference){.ob-help[open] p{animation:ob-reveal 140ms ease-out}.ob-content > *{animation:ob-arrive 320ms cubic-bezier(.22,.8,.25,1)}.ob-app [role="progressbar"] > *{transition:width 240ms ease-out}}
+@media(prefers-reduced-motion:reduce){.ob-app button,.ob-app button span{transition:none!important}.ob-app button:active:not(:disabled){transform:none}}
+.ob-help{font-size:calc(13px * var(--fs));color:var(--label2)}
+.ob-help summary{list-style:none;cursor:pointer;min-height:44px;display:flex;align-items:center;gap:8px;width:fit-content}
+.ob-help summary::-webkit-details-marker{display:none}
+.ob-help summary::before{content:'i';display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:1.5px solid currentColor;border-radius:50%;font:600 12px Georgia,serif}
+.ob-help p{margin:0;padding:12px 14px;background:var(--card);border:1px solid var(--sep);border-radius:12px;line-height:1.6;color:var(--label)}
+.ob-help summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+</style>
+</helmet>
+<div class="ob-app" style="{{rootStyle}}">
+
+<div style="padding-top: var(--st); flex-shrink: 0; background: var(--bg)">
+<div style="height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px">
+<div style="display: flex; min-width: 96px">
+<sc-if value="{{nav.back}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{back}}" style="{{st.navBtn}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.chevL}}"></path></svg>返回</button>
+</sc-if>
+<sc-if value="{{nav.cancel}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{cancel}}" style="{{st.navBtn}}">取消</button>
+</sc-if>
+</div>
+<div style="font-weight: 600; font-size: calc(17px * var(--fs))">{{nav.title}}</div>
+<div style="display: flex; justify-content: flex-end; min-width: 96px">
+<sc-if value="{{nav.skip}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{toLocal}}" style="{{st.navBtn}}">暂不连接</button>
+</sc-if>
+</div>
+</div>
+</div>
+
+<div class="ob-content" key="{{pageKey}}" style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 24px; display: flex; flex-direction: column; gap: 24px">
+
+<sc-if value="{{is.intro}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 12px; text-align: center">
+<div style="width: 88px; height: 88px; border-radius: 20px; border: 1.5px dashed var(--label3); background: var(--card); display: flex; align-items: center; justify-content: center; color: var(--label2); font-size: calc(12px * var(--fs))">图标占位</div>
+<h1 style="margin: 0; font-size: calc(28px * var(--fs)); line-height: 1.2; font-weight: 700">欢迎使用 HealthBridge</h1>
+<p style="margin: 0; font-size: calc(17px * var(--fs)); line-height: 1.35; color: var(--label2)">让 AI 了解你的健康，数据由你掌控。</p>
+</div>
+<div style="background: var(--card); border-radius: 12px; padding: 16px 12px; display: flex; align-items: flex-start; justify-content: center; gap: 4px; flex-wrap: wrap">
+<sc-for list="{{flow}}" as="n" hint-placeholder-count="3">
+<sc-if value="{{n.arrow}}" hint-placeholder-val="{{false}}">
+<svg width="20" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--label3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.arrowR}}"></path></svg>
+</sc-if>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 92px">
+<div style="width: 44px; height: 44px; border-radius: 22px; background: var(--fill); color: {{n.color}}; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg></div>
+<div style="font-size: calc(12px * var(--fs)); line-height: 1.3; color: var(--label2)">{{n.label}}</div>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 20px">
+<sc-for list="{{features}}" as="f" hint-placeholder-count="3">
+<div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="color: var(--blue); flex-shrink: 0; padding-top: 2px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(28px * var(--fs)); height: calc(28px * var(--fs))"><path d="{{f.icon}}"></path></svg></div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="font-weight: 600; font-size: calc(17px * var(--fs)); line-height: 1.3">{{f.title}}</div>
+<details class="ob-help" onMouseEnter="{{helpEnter}}" onMouseLeave="{{helpLeave}}" onKeyDown="{{helpKey}}"><summary aria-label="{{f.title}}">了解更多</summary><p>{{f.text}}</p></details>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{is.connect}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="{{st.h1}}">连接你的服务器</h1>
+<p style="{{st.lead}}">填写服务器地址和写入 Token。测试时不会发送健康数据。</p>
+</div>
+<div>
+<div style="{{st.card}}">
+<div style="{{st.field}}">
+<label for="{{ids.url}}" style="{{st.fieldLabel}}">地址</label>
+<input id="{{ids.url}}" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://health-mcp.你的子域.workers.dev" value="{{url}}" onChange="{{onUrl}}" style="{{st.input}}">
+</div>
+<div style="{{st.sep}}"></div>
+<div style="{{st.field}}">
+<label for="{{ids.token}}" style="{{st.fieldLabel}}">Token</label>
+<input id="{{ids.token}}" type="password" autocomplete="off" placeholder="INGEST_TOKEN" value="{{token}}" onChange="{{onToken}}" style="{{st.input}}">
+<button type="button" onClick="{{paste}}" style="{{st.smallBtn}}">粘贴</button>
+</div>
+</div>
+<details class="ob-help" onMouseEnter="{{helpEnter}}" onMouseLeave="{{helpLeave}}" onKeyDown="{{helpKey}}"><summary>如何填写 Token</summary><p>填写部署时设置的 INGEST_TOKEN，用于上传和删除数据，保存在本机钥匙串中。AI Agent 使用的 MCP_TOKEN 不需要填在这里。</p></details>
+</div>
+<div style="{{st.card}}">
+<button type="button" onClick="{{test}}" disabled="{{testDisabled}}" style="{{st.rowBtn}}">
+<span style="flex: 1">{{testLabel}}</span>
+</button>
+<sc-if value="{{hasResult}}" hint-placeholder-val="{{false}}">
+<div style="{{st.sep}}"></div>
+<div style="display: flex; gap: 12px; padding: 12px 16px; align-items: flex-start">
+<div style="color: {{res.color}}; flex-shrink: 0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(24px * var(--fs)); height: calc(24px * var(--fs))"><path d="{{res.icon}}"></path></svg></div>
+<div style="display: flex; flex-direction: column; gap: 4px; flex: 1">
+<div style="font-weight: 600; font-size: calc(17px * var(--fs)); line-height: 1.3">{{res.title}}</div>
+<sc-if value="{{res.hasText}}" hint-placeholder-val="{{false}}">
+<div style="font-size: calc(15px * var(--fs)); line-height: 1.35; color: var(--label2)">{{res.text}}</div>
+</sc-if>
+<sc-if value="{{res.hasLink}}" hint-placeholder-val="{{false}}">
+<a href="https://github.com/" style="font-size: calc(15px * var(--fs)); color: var(--blue); text-decoration: none">查看更新说明</a>
+</sc-if>
+</div>
+</div>
+<sc-for list="{{res.rows}}" as="r" hint-placeholder-count="0">
+<div style="{{st.sep}}"></div>
+<div style="{{st.kv}}"><span>{{r.k}}</span><span style="color: var(--label2); text-align: right">{{r.v}}</span></div>
+</sc-for>
+</sc-if>
+</div>
+<a href="https://github.com/" style="{{st.linkRow}}">还没有服务器？查看部署说明<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.ext}}"></path></svg></a>
+</sc-if>
+
+<sc-if value="{{is.consent}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 12px; align-items: flex-start">
+<div style="width: 52px; height: 52px; border-radius: 14px; background: var(--blue); color: var(--onAccent); display: flex; align-items: center; justify-content: center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.shield}}"></path></svg></div>
+<h1 style="{{st.h1}}">共享健康数据前，请确认</h1>
+<p style="{{st.lead}}">同意后，HealthBridge 会在后台把健康数据发送到你的服务器。请阅读以下内容。</p>
+</div>
+<div style="{{st.card}}">
+<sc-for list="{{consent}}" as="c" hint-placeholder-count="5">
+<sc-if value="{{c.sep}}" hint-placeholder-val="{{false}}"><div style="{{st.sepIcon}}"></div></sc-if>
+<div style="display: flex; gap: 12px; padding: 12px 16px; align-items: flex-start">
+<div style="color: {{c.color}}; flex-shrink: 0; padding-top: 1px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(24px * var(--fs)); height: calc(24px * var(--fs))"><path d="{{c.icon}}"></path></svg></div>
+<div style="display: flex; flex-direction: column; gap: 3px">
+<div style="font-weight: 600; font-size: calc(15px * var(--fs)); line-height: 1.3">{{c.title}}</div>
+<div style="font-size: calc(15px * var(--fs)); line-height: 1.4; color: var(--label2)">{{c.text}}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<a href="https://github.com/" style="{{st.linkRow}}">阅读隐私政策<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.ext}}"></path></svg></a>
+</sc-if>
+
+<sc-if value="{{is.types}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="{{st.h1}}">{{typesTitle}}</h1>
+<p style="{{st.lead}}">{{typesLead}}</p>
+</div>
+<div>
+<div style="{{st.hdr}}">数据类型</div>
+<div style="{{st.card}}">
+<sc-for list="{{typeRows}}" as="t" hint-placeholder-count="5">
+<sc-if value="{{t.sep}}" hint-placeholder-val="{{false}}"><div style="{{st.sepIcon}}"></div></sc-if>
+<div style="{{st.row}}">
+<span style="color: {{t.color}}; display: flex; flex-shrink: 0"><svg viewBox="0 0 24 24" fill="{{t.fill}}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(24px * var(--fs)); height: calc(24px * var(--fs))"><path d="{{t.icon}}"></path></svg></span>
+<span style="flex: 1">{{t.name}}</span>
+<button type="button" role="switch" aria-checked="{{t.on}}" aria-label="{{t.name}}" onClick="{{t.toggle}}" style="{{t.track}}"><span style="{{t.knob}}"></span></button>
+</div>
+</sc-for>
+</div>
+<p style="{{st.ftr}}">{{typesFooter}}</p>
+</div>
+<sc-if value="{{isSync}}" hint-placeholder-val="{{true}}">
+<div>
+<div style="{{st.hdr}}">首次同步范围</div>
+<div style="{{st.card}}">
+<sc-for list="{{ranges}}" as="r" hint-placeholder-count="5">
+<sc-if value="{{r.sep}}" hint-placeholder-val="{{false}}"><div style="{{st.sep}}"></div></sc-if>
+<button type="button" onClick="{{r.pick}}" aria-pressed="{{r.on}}" style="{{st.rowBtnPlain}}">
+<span style="flex: 1">{{r.label}}</span>
+<sc-if value="{{r.on}}" hint-placeholder-val="{{false}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.check}}"></path></svg></sc-if>
+</button>
+</sc-for>
+</div>
+<details class="ob-help" onMouseEnter="{{helpEnter}}" onMouseLeave="{{helpLeave}}" onKeyDown="{{helpKey}}"><summary>同步需要多久？</summary><p>范围越大，首次同步用时越长。选择全部数据可能需要多次打开 App 才能传完，之后只同步新增数据。</p></details>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{is.health}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 12px; align-items: flex-start">
+<div style="width: 52px; height: 52px; border-radius: 14px; background: var(--card); color: var(--red); display: flex; align-items: center; justify-content: center; border: .5px solid var(--sep)"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="{{ic.heart}}"></path></svg></div>
+<h1 style="{{st.h1}}">允许读取健康数据</h1>
+<p style="{{st.lead}}">接下来 iOS 会询问是否允许 HealthBridge 读取你选择的数据类型。请打开全部所选类型。HealthBridge 只读取，不会写入或修改健康数据。</p>
+</div>
+<div style="{{st.card}}">
+<div style="display: flex; gap: 12px; padding: 12px 16px; align-items: flex-start">
+<div style="color: var(--blue); flex-shrink: 0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(24px * var(--fs)); height: calc(24px * var(--fs))"><path d="{{ic.info}}"></path></svg></div>
+<div style="font-size: calc(15px * var(--fs)); line-height: 1.4; color: var(--label2)">iOS 不会告诉 App 你是否允许了某一项读取。如果之后概览里某类数据一直是空的，请到「设置 › 健康 › 数据访问与设备 › HealthBridge」检查是否已打开。</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{is.progress}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="{{st.h1}}">{{progTitle}}</h1>
+<p style="{{st.lead}}">{{progLead}}</p>
+</div>
+<div>
+<div style="{{st.card}}">
+<sc-for list="{{progRows}}" as="p" hint-placeholder-count="5">
+<sc-if value="{{p.sep}}" hint-placeholder-val="{{false}}"><div style="{{st.sepIcon}}"></div></sc-if>
+<div style="display: flex; gap: 12px; padding: 12px 16px; align-items: center">
+<span style="color: {{p.color}}; display: flex; flex-shrink: 0"><svg viewBox="0 0 24 24" fill="{{p.fill}}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(24px * var(--fs)); height: calc(24px * var(--fs))"><path d="{{p.icon}}"></path></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0">
+<div style="display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap">
+<span style="font-size: calc(17px * var(--fs))">{{p.name}}</span>
+<span style="font-size: calc(15px * var(--fs)); color: var(--label2); font-variant-numeric: tabular-nums">{{p.count}}</span>
+</div>
+<div role="progressbar" aria-label="{{p.name}}" aria-valuenow="{{p.pct}}" aria-valuemin="0" aria-valuemax="100" style="height: 4px; border-radius: 2px; background: var(--fill); overflow: hidden"><div style="{{p.bar}}"></div></div>
+</div>
+</div>
+</sc-for>
+</div>
+<p style="{{st.ftr}}">样本条数为示例。iPhone 锁定后会暂停读取，解锁后继续；已上传的部分不会重复上传。</p>
+</div>
+</sc-if>
+
+</div>
+
+<div style="flex-shrink: 0; padding: 8px 16px; padding-bottom: max(var(--sb), 16px); display: flex; flex-direction: column; gap: 4px; background: var(--bg)">
+<sc-if value="{{is.intro}}" hint-placeholder-val="{{true}}">
+<button type="button" onClick="{{toConnect}}" style="{{st.primary}}">连接我的服务器</button>
+<button type="button" onClick="{{toLocal}}" style="{{st.plain}}">仅在本机查看</button>
+</sc-if>
+<sc-if value="{{is.connect}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{toConsent}}" disabled="{{connectBlocked}}" style="{{continueStyle}}">继续</button>
+</sc-if>
+<sc-if value="{{is.consent}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{agree}}" style="{{st.primary}}">同意并继续</button>
+<button type="button" onClick="{{disagree}}" style="{{st.plain}}">{{disagreeLabel}}</button>
+</sc-if>
+<sc-if value="{{is.types}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{typesNext}}" disabled="{{noneOn}}" style="{{typesStyle}}">{{typesBtn}}</button>
+</sc-if>
+<sc-if value="{{is.health}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{openSheet}}" style="{{st.primary}}">继续</button>
+</sc-if>
+<sc-if value="{{is.progress}}" hint-placeholder-val="{{false}}">
+<sc-if value="{{progDone}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{finishNow}}" style="{{st.primary}}">开始使用</button>
+</sc-if>
+<sc-if value="{{progRunning}}" hint-placeholder-val="{{true}}">
+<button type="button" onClick="{{finishBg}}" style="{{st.plain}}">在后台继续</button>
+</sc-if>
+</sc-if>
+</div>
+
+<sc-if value="{{sheet}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; background: var(--dim); display: flex; flex-direction: column; justify-content: flex-end">
+<div role="dialog" aria-label="健康访问（系统界面示意）" style="height: calc(100% - var(--st) - 10px); background: var(--bg); border-radius: 12px 12px 0 0; display: flex; flex-direction: column; overflow: hidden">
+<div style="height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; flex-shrink: 0">
+<button type="button" onClick="{{sheetDone}}" style="{{st.navBtn}}">不允许</button>
+<div style="font-weight: 600; font-size: calc(17px * var(--fs))">健康访问</div>
+<button type="button" onClick="{{sheetDone}}" disabled="{{allowOff}}" style="{{allowStyle}}">允许</button>
+</div>
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 24px; display: flex; flex-direction: column; gap: 20px">
+<div style="font-size: calc(12px * var(--fs)); color: var(--label2); text-align: center">以下为 iOS 系统授权表单的示意，实际样式由系统提供</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center">
+<div style="width: 56px; height: 56px; border-radius: 13px; border: 1.5px dashed var(--label3); background: var(--card)"></div>
+<div style="font-weight: 600; font-size: calc(20px * var(--fs)); line-height: 1.25">“HealthBridge”想要访问你的健康数据</div>
+</div>
+<div style="{{st.card}}">
+<button type="button" onClick="{{sheetAll}}" style="{{st.rowBtn}}">打开所有</button>
+</div>
+<div>
+<div style="{{st.hdr}}">允许“HealthBridge”读取</div>
+<div style="{{st.card}}">
+<sc-for list="{{sheetRows}}" as="t" hint-placeholder-count="5">
+<sc-if value="{{t.sep}}" hint-placeholder-val="{{false}}"><div style="{{st.sepIcon}}"></div></sc-if>
+<div style="{{st.row}}">
+<span style="color: {{t.color}}; display: flex; flex-shrink: 0"><svg viewBox="0 0 24 24" fill="{{t.fill}}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(24px * var(--fs)); height: calc(24px * var(--fs))"><path d="{{t.icon}}"></path></svg></span>
+<span style="flex: 1">{{t.name}}</span>
+<button type="button" role="switch" aria-checked="{{t.on}}" aria-label="{{t.name}}" onClick="{{t.toggle}}" style="{{t.track}}"><span style="{{t.knob}}"></span></button>
+</div>
+</sc-for>
+</div>
+</div>
+<div>
+<div style="{{st.hdr}}">App 说明</div>
+<div style="{{st.card}}"><div style="padding: 12px 16px; font-size: calc(15px * var(--fs)); line-height: 1.4">用于在本机显示健康概览；在你同意后，同步到你自己配置的服务器，供你接入的 AI Agent 查询。</div></div>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"textScale":{"editor":"enum","options":["1","1.35","1.65"],"default":"1"},"device":{"editor":"enum","options":["6.1","se"],"default":"6.1"},"start":{"editor":"enum","options":["intro","connect","consent","types","health","progress"],"default":"intro"},"result":{"editor":"enum","options":["","ok","token","unreachable","outdated"],"default":""},"mode":{"editor":"enum","options":["sync","local"],"default":"sync"},"embedded":{"editor":null},"reconsent":{"editor":null},"sheet":{"editor":null},"onFinish":{"editor":null},"onCancel":{"editor":null},"$preview":{"width":393,"height":852}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.uid = 'ob' + Math.random().toString(36).slice(2, 8);
+    const start = props.start || (props.embedded ? 'connect' : 'intro');
+    const mid = { sleep: 1, hr: 0.46, rhr: 1, hrv: 1, steps: 0.72 };
+    this.state = {
+      step: start, hist: [], mode: props.mode === 'local' ? 'local' : 'sync',
+      url: 'https://health-mcp.example.workers.dev', token: 'example-ingest-token-0000',
+      testing: false, result: props.result || null,
+      types: { sleep: true, hr: true, rhr: true, hrv: true, steps: true },
+      range: '30', sheet: props.sheet === true,
+      sheetOn: { sleep: false, hr: false, rhr: false, hrv: false, steps: false },
+      prog: start === 'progress' ? mid : { sleep: 0, hr: 0, rhr: 0, hrv: 0, steps: 0 }
+    };
+  }
+  componentWillUnmount() { clearInterval(this.timer); clearTimeout(this.tt); }
+  go(step, extra) {
+    this.setState({ hist: this.state.hist.concat([this.state.step]), step: step, ...(extra || {}) });
+    if (step === 'progress') this.run();
+  }
+  run() {
+    clearInterval(this.timer);
+    const speed = { sleep: 0.16, hr: 0.03, rhr: 0.4, hrv: 0.22, steps: 0.07 };
+    this.setState({ prog: { sleep: 0, hr: 0, rhr: 0, hrv: 0, steps: 0 } });
+    this.timer = setInterval(() => {
+      const p = { ...this.state.prog };
+      let done = true;
+      Object.keys(p).forEach((k) => { p[k] = Math.min(1, p[k] + speed[k]); if (p[k] < 1) done = false; });
+      this.setState({ prog: p });
+      if (done) clearInterval(this.timer);
+    }, 160);
+  }
+  finish(r) { clearInterval(this.timer); if (this.props.onFinish) this.props.onFinish(r); }
+  theme() {
+    const p = this.props;
+    const dark = p.dark === true || p.dark === 'true';
+    const se = p.device === 'se';
+    const fs = parseFloat(p.textScale) || 1;
+    const emb = p.embedded === true;
+    const d = se ? { w: 375, h: 667, st: 20, sb: 0 } : { w: 393, h: 852, st: 59, sb: 34 };
+    const c = dark ? {
+      bg:'#171F20',card:'#242F30',card2:'#303D3B',label:'#F4F0E8',label2:'#B8C4BE',label3:'#81978E',
+      sep:'rgba(184,207,196,.19)',fill:'rgba(171,198,182,.13)',fill2:'rgba(171,198,182,.23)',blue:'#AECDBA',red:'#ED9FAD',orange:'#DFB575',
+      yellow:'#E8D392',green:'#A2C598',indigo:'#B8A2D2',cyan:'#9EBFD1',purple:'#C4A4C4',gray:'#A2B0A7',onAccent:'#1E352A',dim:'rgba(5,14,14,.58)'
+    } : {
+      bg:'#F4EFE9',card:'#FFFCF7',card2:'#EEE9E2',label:'#293E38',label2:'#58685F',label3:'#809287',
+      sep:'rgba(82,111,94,.18)',fill:'#E7EBDF',fill2:'#D8E0D3',blue:'#466D5C',red:'#A04E66',orange:'#936321',
+      yellow:'#B39B4D',green:'#527846',indigo:'#715D91',cyan:'#4B7189',purple:'#8B6389',gray:'#687B70',onAccent:'#FFFFFF',dim:'rgba(36,56,47,.24)'
+    };
+    const h = emb ? d.h - d.st - 10 : d.h;
+    const vars = Object.keys(c).map((k) => '--' + k + ':' + c[k]).join(';');
+    const root = 'width:' + d.w + 'px;height:' + h + 'px;--st:' + (emb ? 8 : d.st) + 'px;--sb:' + d.sb + 'px;--fs:' + fs + ';' + vars +
+      ';position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--bg);color:var(--label);' +
+      'font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;' +
+      (emb ? 'border-radius:12px 12px 0 0;' : '');
+    return { root: root, emb: emb };
+  }
+  icons() {
+    return {
+      chevL: 'M15 5l-7 7 7 7', arrowR: 'M5 12h14M13 6l6 6-6 6', ext: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6', check: 'M5 12.5l4.5 4.5L19 7',
+      heart: 'M12 20.5s-8-4.7-8-11a4.6 4.6 0 0 1 8-3.1 4.6 4.6 0 0 1 8 3.1c0 6.3-8 11-8 11z',
+      bed: 'M3 6v13M3 15h18v4M21 15v-2a3 3 0 0 0-3-3h-7v5M7 12.5a1.5 1.5 0 1 0 0-.01',
+      ecg: 'M2 12h4l2.5-6 4 12 2.5-6H22', walk: 'M13.5 5.5a1.5 1.5 0 1 0 0-.01M9 21l2.5-6.5 2.5 2.5v4M11.5 14.5l1.2-5.5 2.8 2.5h3M8 12l2-3.5 2.7.5',
+      iphone: 'M8 2.5h8a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-15a2 2 0 0 1 2-2zM11 18.5h2', cloud: 'M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.8 8 4.75 4.75 0 0 1 17.5 18.5z',
+      sparkle: 'M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z',
+      clock: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3.5 2', shield: 'M12 3l8 3v6c0 4.8-3.4 8-8 9-4.6-1-8-4.2-8-9V6zM8.5 12l2.5 2.5 4.5-5',
+      server: 'M4 4.5h16v6.5H4zM4 13h16v6.5H4zM8 7.75h.01M8 16.25h.01', person: 'M12 4a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM5 20a7 7 0 0 1 14 0',
+      info: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v5.5M12 7.75h.01', undo: 'M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11',
+      checkC: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12.5l2.8 2.8L16.5 9', xC: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM9 9l6 6M15 9l-6 6',
+      wifiOff: 'M2.5 8.8a14.5 14.5 0 0 1 19 0M5.5 12.4a10 10 0 0 1 13 0M9 15.9a5 5 0 0 1 6 0M12 19.5h.01M3 3l18 18', warn: 'M12 3.5l9.5 16.5h-19zM12 10v4.5M12 17.25h.01'
+    };
+  }
+  sw(on) {
+    return {
+      track: 'width:51px;height:31px;border-radius:16px;border:0;padding:2px;flex-shrink:0;cursor:pointer;display:flex;transition:background .2s;background:' + (on ? 'var(--green)' : 'var(--fill2)'),
+      knob: 'width:27px;height:27px;border-radius:50%;background:#FFFFFF;box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16);transition:transform .2s;transform:translateX(' + (on ? 20 : 0) + 'px)'
+    };
+  }
+  renderVals() {
+    const s = this.state;
+    const th = this.theme();
+    const ic = this.icons();
+    const local = s.mode === 'local';
+    const emb = th.emb;
+    const step = s.step;
+    const btn = 'display:flex;align-items:center;justify-content:center;width:100%;min-height:50px;border-radius:12px;border:0;font:inherit;font-size:calc(17px * var(--fs));padding:12px 16px;box-sizing:border-box;cursor:pointer;';
+    const st = {
+      navBtn: 'display:flex;align-items:center;gap:2px;min-height:44px;padding:0 8px;background:none;border:0;font:inherit;font-size:calc(17px * var(--fs));color:var(--blue);cursor:pointer',
+      h1: 'margin:0;font-size:calc(28px * var(--fs));line-height:1.2;font-weight:700',
+      lead: 'margin:0;font-size:calc(17px * var(--fs));line-height:1.4;color:var(--label2)',
+      card: 'background:var(--card);border-radius:10px;overflow:hidden',
+      hdr: 'font-size:calc(13px * var(--fs));color:var(--label2);padding:0 16px 7px',
+      ftr: 'margin:7px 0 0;font-size:calc(13px * var(--fs));line-height:1.4;color:var(--label2);padding:0 16px',
+      sep: 'height:.5px;background:var(--sep);margin-left:16px',
+      sepIcon: 'height:.5px;background:var(--sep);margin-left:52px',
+      row: 'display:flex;align-items:center;gap:12px;min-height:44px;padding:6px 16px;box-sizing:border-box;font-size:calc(17px * var(--fs))',
+      rowBtn: 'display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:11px 16px;box-sizing:border-box;background:none;border:0;font:inherit;font-size:calc(17px * var(--fs));color:var(--blue);text-align:left;cursor:pointer',
+      rowBtnPlain: 'display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:11px 16px;box-sizing:border-box;background:none;border:0;font:inherit;font-size:calc(17px * var(--fs));color:var(--label);text-align:left;cursor:pointer',
+      field: 'display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 16px;box-sizing:border-box;flex-wrap:wrap',
+      fieldLabel: 'width:calc(56px * var(--fs));font-size:calc(17px * var(--fs))',
+      input: 'flex:1;min-width:140px;border:0;outline:0;background:none;font:inherit;font-size:calc(17px * var(--fs));color:var(--label);padding:8px 0',
+      smallBtn: 'border:0;border-radius:14px;background:var(--fill);color:var(--blue);font:inherit;font-size:calc(15px * var(--fs));padding:6px 12px;min-height:30px;cursor:pointer',
+      kv: 'display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;min-height:44px;align-items:center;padding:6px 16px;box-sizing:border-box;font-size:calc(17px * var(--fs))',
+      linkRow: 'display:flex;align-items:center;gap:6px;justify-content:center;min-height:44px;font-size:calc(15px * var(--fs));color:var(--blue);text-decoration:none',
+      primary: btn + 'background:var(--blue);color:var(--onAccent);font-weight:600',
+      primaryOff: btn + 'background:var(--fill);color:var(--label3);font-weight:600;cursor:default',
+      plain: btn + 'background:none;color:var(--blue)'
+    };
+    const typeDefs = [
+      { id: 'sleep', name: '睡眠', color: 'var(--cyan)', icon: ic.bed, fill: 'none', total: 412 },
+      { id: 'hr', name: '心率', color: 'var(--red)', icon: ic.heart, fill: 'currentColor', total: 38412 },
+      { id: 'rhr', name: '静息心率', color: 'var(--red)', icon: ic.heart, fill: 'currentColor', total: 30 },
+      { id: 'hrv', name: '心率变异性', color: 'var(--red)', icon: ic.ecg, fill: 'none', total: 186 },
+      { id: 'steps', name: '步数', color: 'var(--orange)', icon: ic.walk, fill: 'none', total: 3904 }
+    ];
+    const typeRows = typeDefs.map((t, i) => ({ ...t, sep: i > 0, on: s.types[t.id], ...this.sw(s.types[t.id]),
+      toggle: () => this.setState({ types: { ...s.types, [t.id]: !s.types[t.id] } }) }));
+    const enabled = typeDefs.filter((t) => s.types[t.id]);
+    const sheetRows = enabled.map((t, i) => ({ ...t, sep: i > 0, on: s.sheetOn[t.id], ...this.sw(s.sheetOn[t.id]),
+      toggle: () => this.setState({ sheetOn: { ...s.sheetOn, [t.id]: !s.sheetOn[t.id] } }) }));
+    const rangeDefs = [['7', '最近 7 天'], ['30', '最近 30 天'], ['90', '最近 90 天'], ['365', '最近 1 年'], ['all', '全部数据']];
+    const ranges = rangeDefs.map((r, i) => ({ label: r[1], on: s.range === r[0], sep: i > 0, pick: () => this.setState({ range: r[0] }) }));
+    const rangeLabel = (rangeDefs.find((r) => r[0] === s.range) || rangeDefs[1])[1];
+    const progRows = enabled.map((t, i) => {
+      const f = s.prog[t.id] || 0;
+      const n = Math.round(t.total * f);
+      return { ...t, sep: i > 0, pct: Math.round(f * 100), count: f >= 1 ? '已完成 · ' + t.total.toLocaleString('zh-CN') + ' 条' : n.toLocaleString('zh-CN') + ' / ' + t.total.toLocaleString('zh-CN') + ' 条',
+        bar: 'height:100%;border-radius:2px;background:' + (f >= 1 ? 'var(--green)' : 'var(--blue)') + ';width:' + (f * 100).toFixed(1) + '%' };
+    });
+    const progDone = enabled.every((t) => (s.prog[t.id] || 0) >= 1);
+    const results = {
+      ok: { icon: ic.checkC, color: 'var(--green)', title: '连接成功', text: '', rows: [{ k: '服务端版本', v: '0.1.0（示例）' }, { k: '数据格式版本', v: '1' }, { k: '服务器上已有数据', v: '0 条' }] },
+      token: { icon: ic.xC, color: 'var(--red)', title: 'Token 无效', text: '服务器拒绝了这个 Token（401）。请确认填写的是部署时设置的 INGEST_TOKEN，而不是给 AI Agent 用的 MCP_TOKEN。', rows: [] },
+      unreachable: { icon: ic.wifiOff, color: 'var(--orange)', title: '无法访问这个地址', text: '请确认地址以 https:// 开头且没有拼写错误、iPhone 已联网，并且 Worker 已部署成功。', rows: [] },
+      outdated: { icon: ic.warn, color: 'var(--orange)', title: '服务端版本需要更新', text: '服务器的数据格式版本是 0，本 App 需要 1 或更高（版本号为示例）。请按部署说明更新 Worker 后再测试。', rows: [], link: true }
+    };
+    const r = results[s.result] || results.ok;
+    const host = (s.url || '').replace(/^https?:\/\//, '').replace(/\/.*$/, '') || '你填写的服务器';
+    const connectBlocked = s.result !== 'ok';
+    const noneOn = enabled.length === 0;
+    const allowOff = !Object.keys(s.sheetOn).some((k) => s.sheetOn[k] && s.types[k]);
+    const back = s.hist.length > 0 && step !== 'progress';
+    return {
+      helpEnter: (e) => { if (!e.currentTarget.dataset.dismissed) e.currentTarget.open = true; },
+      helpLeave: (e) => { delete e.currentTarget.dataset.dismissed; if (!e.currentTarget.contains(e.currentTarget.ownerDocument.activeElement)) e.currentTarget.open = false; },
+      helpKey: (e) => { if (e.key === 'Escape') { e.currentTarget.open = false; e.currentTarget.dataset.dismissed = 'true'; } },
+      pageKey:step, rootStyle: th.root, st: st, ic: ic,
+      ids: { url: this.uid + '-url', token: this.uid + '-token' },
+      nav: { back: back, cancel: emb && !back && step !== 'progress', skip: step === 'connect' && !emb, title: '' },
+      is: { intro: step === 'intro', connect: step === 'connect', consent: step === 'consent', types: step === 'types', health: step === 'health', progress: step === 'progress' },
+      flow: [
+        { label: '这台 iPhone 上的健康数据', icon: ic.iphone, color: 'var(--red)', arrow: false },
+        { label: '你的 Cloudflare 服务器', icon: ic.cloud, color: 'var(--orange)', arrow: true },
+        { label: '你接入的 AI Agent', icon: ic.sparkle, color: 'var(--indigo)', arrow: true }
+      ],
+      features: [
+        { icon: ic.server, title: '数据只发往你自己的服务器', text: '服务器部署在你的 Cloudflare 账号中，HealthBridge 的开发者无法访问你的数据。' },
+        { icon: ic.sparkle, title: '让 AI Agent 有据可查', text: 'Claude、Codex 等支持 MCP 的 Agent 可以查询睡眠、心率、步数等数据。' },
+        { icon: ic.clock, title: '后台同步，会有延迟', text: '通常延迟几分钟到一小时。iPhone 锁定时无法读取健康数据，夜间的睡眠一般在早上解锁后补齐。' }
+      ],
+      url: s.url, token: s.token, testing: s.testing,
+      testLabel: s.testing ? '正在连接…' : (s.result ? '重新测试' : '测试连接'),
+      testDisabled: s.testing || !s.url || !s.token,
+      hasResult: !!s.result && !s.testing,
+      res: { ...r, hasText: !!r.text, hasLink: !!r.link },
+      connectBlocked: connectBlocked, continueStyle: connectBlocked ? st.primaryOff : st.primary,
+      onUrl: (e) => this.setState({ url: e.target.value, result: null }),
+      onToken: (e) => this.setState({ token: e.target.value, result: null }),
+      paste: () => this.setState({ token: 'example-ingest-token-0000', result: null }),
+      test: () => {
+        this.setState({ testing: true, result: null });
+        clearTimeout(this.tt);
+        this.tt = setTimeout(() => this.setState({ testing: false, result: this.props.result || 'ok' }), 900);
+      },
+      consent: [
+        { icon: ic.server, color: 'var(--blue)', title: '发送到哪里', text: '你填写的服务器 ' + host + '。它运行在你自己的 Cloudflare 账号中。', sep: false },
+        { icon: ic.heart, color: 'var(--red)', title: '发送哪些数据', text: '你在下一步选择的健康数据类型，例如睡眠、心率、步数，包括时间、数值和记录设备的名称。', sep: true },
+        { icon: ic.sparkle, color: 'var(--indigo)', title: '谁可能读取', text: '你接入这台服务器的第三方 AI Agent，例如 Claude、Codex。它们的提供方会按各自的隐私政策处理读取到的数据。', sep: true },
+        { icon: ic.person, color: 'var(--gray)', title: '开发者', text: 'HealthBridge 的开发者无法访问你的服务器和数据。App 不包含任何分析或广告 SDK。', sep: true },
+        { icon: ic.undo, color: 'var(--green)', title: '随时撤回', text: '可在「设置 › 数据共享同意」中撤回。撤回后 App 立即停止上传；服务器上已有的数据需要你另行删除。', sep: true }
+      ],
+      disagreeLabel: this.props.reconsent ? '暂不同意' : '不同意，仅在本机查看',
+      typesTitle: local ? '选择要在本机查看的数据' : '选择要同步的数据',
+      typesLead: local ? '本机模式只读取这台 iPhone 上的健康数据用于概览，不会上传。' : '只有打开的类型会同步到你的服务器。',
+      typesFooter: local ? '之后可以在「设置」中更改，或随时连接服务器开始同步。' : '关闭的类型不会上传。之后可以在「设置 › 数据类型」中更改。',
+      typesBtn: emb ? '开始同步' : '继续',
+      typeRows: typeRows, isSync: !local, ranges: ranges, noneOn: noneOn, typesStyle: noneOn ? st.primaryOff : st.primary,
+      progRows: progRows, progDone: progDone, progRunning: !progDone,
+      progTitle: progDone ? '首次同步已完成' : '正在进行首次同步',
+      progLead: progDone ? '之后新产生的数据会在后台自动同步。' : '正在上传' + rangeLabel + '的数据。可以先离开此页面，进度会显示在「同步」中。',
+      sheet: s.sheet, sheetRows: sheetRows, allowOff: allowOff,
+      allowStyle: st.navBtn + ';font-weight:600' + (allowOff ? ';color:var(--label3);cursor:default' : ''),
+      back: () => { const h = s.hist.slice(); const prev = h.pop(); this.setState({ hist: h, step: prev }); },
+      cancel: () => { if (this.props.onCancel) this.props.onCancel(); },
+      toConnect: () => this.go('connect', { mode: 'sync' }),
+      toLocal: () => this.go('types', { mode: 'local' }),
+      toConsent: () => this.go('consent'),
+      agree: () => { if (this.props.reconsent) this.finish({ mode: 'sync' }); else this.go('types', { mode: 'sync' }); },
+      disagree: () => {
+        if (emb) { if (this.props.onCancel) this.props.onCancel(); return; }
+        this.go('types', { mode: 'local', url: '', token: '', result: null });
+      },
+      typesNext: () => { if (emb) this.finish({ mode: 'sync', background: true }); else this.go('health'); },
+      openSheet: () => this.setState({ sheet: true }),
+      sheetAll: () => this.setState({ sheetOn: { sleep: true, hr: true, rhr: true, hrv: true, steps: true } }),
+      sheetDone: () => { this.setState({ sheet: false }); if (local) this.finish({ mode: 'local' }); else this.go('progress'); },
+      finishNow: () => this.finish({ mode: 'sync' }),
+      finishBg: () => this.finish({ mode: 'sync', background: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

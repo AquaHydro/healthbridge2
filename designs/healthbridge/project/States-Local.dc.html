@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>本机模式、已撤回同意、无健康数据</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 2237px; height: 968px; box-sizing: border-box; padding: 40px; display: flex; gap: 48px; align-items: flex-start; background: #E5E5EA; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; color: #1C1C1E">
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">本机模式 · 概览</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="overview" scenario="local" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">本机模式 · 同步已暂停</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="sync" scenario="local" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">本机模式 · 设置</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="settings" scenario="local" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">已撤回同意 · 同步已暂停</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="sync" scenario="revoked" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">无健康数据 · 引导自查权限</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="overview" scenario="nodata" hint-size="393px,852px"></dc-import></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2237,"height":968}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

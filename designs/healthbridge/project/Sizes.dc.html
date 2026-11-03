@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>iPhone SE 与动态字体</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 2183px; height: 968px; box-sizing: border-box; padding: 40px; display: flex; gap: 48px; align-items: flex-start; background: #E5E5EA; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; color: #1C1C1E">
+<div style="display: flex; flex-direction: column; gap: 12px; width: 375px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">iPhone SE · 概览</div>
+<div style="width: 375px; height: 667px; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="overview" device="se" hint-size="375px,667px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 375px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">iPhone SE · 数据共享同意</div>
+<div style="width: 375px; height: 667px; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Onboarding" start="consent" device="se" hint-size="375px,667px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 375px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">iPhone SE · 同步（服务器不可用）</div>
+<div style="width: 375px; height: 667px; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="sync" scenario="unreachable" device="se" hint-size="375px,667px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">较大字体 · 概览</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Home" tab="overview" text-scale="1.35" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">辅助功能字体 · 数据共享同意</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Onboarding" start="consent" text-scale="1.65" hint-size="393px,852px"></dc-import></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2183,"height":968}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

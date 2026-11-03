@@ -1,0 +1,2 @@
+# Set a unique connection password (16+ characters). Used only to pair your first device.
+CONNECT_PASSWORD=

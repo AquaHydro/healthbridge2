@@ -1,0 +1,26 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-11-03T01:56:09Z"},
+  "title": "HealthBridge iOS 原型",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 393, "h": 852, "title": "可交互原型（从首次启动开始）", "is_interactive": true},
+    "Onboarding.dc.html": {"x": 473, "y": 0, "w": 393, "h": 852, "title": "组件 · 引导流程", "is_interactive": true},
+    "Home.dc.html": {"x": 946, "y": 0, "w": 393, "h": 852, "title": "组件 · 主界面", "is_interactive": true},
+    "Flow-Onboarding.dc.html": {"x": 0, "y": 1195, "w": 2678, "h": 968, "title": "① 引导：同步模式主路径", "is_interactive": true},
+    "States-Connect.dc.html": {"x": 0, "y": 2506, "w": 1796, "h": 968, "title": "② 连接服务器的结果与本机模式分支", "is_interactive": true},
+    "Flow-Main.dc.html": {"x": 0, "y": 3817, "w": 1796, "h": 968, "title": "③ 主界面三个 Tab 与概览详情", "is_interactive": true},
+    "Flow-Settings.dc.html": {"x": 0, "y": 5128, "w": 3119, "h": 968, "title": "④ 设置的二级页面与确认", "is_interactive": true},
+    "States-Sync.dc.html": {"x": 0, "y": 6439, "w": 2678, "h": 968, "title": "⑤ 同步状态：等待与未完成", "is_interactive": true},
+    "States-Local.dc.html": {"x": 0, "y": 7750, "w": 2237, "h": 968, "title": "⑥ 本机模式、已撤回同意、无健康数据", "is_interactive": true},
+    "Dark.dc.html": {"x": 0, "y": 9061, "w": 2237, "h": 968, "title": "⑦ 深色模式", "is_interactive": true},
+    "Sizes.dc.html": {"x": 0, "y": 10372, "w": 2183, "h": 968, "title": "⑧ iPhone SE 与动态字体", "is_interactive": true}
+  },
+  "order": ["Main.dc.html", "Onboarding.dc.html", "Home.dc.html", "Flow-Onboarding.dc.html", "States-Connect.dc.html", "Flow-Main.dc.html", "Flow-Settings.dc.html", "States-Sync.dc.html", "States-Local.dc.html", "Dark.dc.html", "Sizes.dc.html"],
+  "notes": {
+    "intro": {"x": 0, "y": -300, "text": "HealthBridge 原型", "kind": "title1", "maxW": 1339},
+    "howto": {"x": 1419, "y": 0, "w": 440, "size": "m", "fill": "blue", "text": "怎么看\n\n· 「可交互原型」从首次启动开始，点 Play 可以走完整流程：同步模式或本机模式。\n· Tweaks：深色模式、文字大小（默认 / 较大 / 辅助功能）、机型（6.1 英寸 / SE）。\n· 下面每一行都是同一套组件在不同初始状态下的画面，单独点 Play 也能继续操作。\n· 所有健康数值、样本条数、服务器地址都是示例，界面上已标注「示例」。"}
+  },
+  "designSystems": []
+}

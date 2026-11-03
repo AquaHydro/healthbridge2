@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>HealthBridge 主界面</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.hb-scroll > *{flex-shrink:0}
+.hb-app button{transition:transform 140ms ease-out,color 180ms ease-out,background-color 180ms ease-out}
+.hb-app button:active:not(:disabled){transform:scale(.975)}
+.hb-tabs::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:calc((100% - 12px)/3);border-radius:28px;background:var(--glassActive);transform:translateX(var(--tab-offset));pointer-events:none}
+.hb-tabs button{position:relative;z-index:1}
+@keyframes hb-arrive{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes hb-reveal{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:no-preference){
+ .hb-tabs::before{transition:transform 320ms cubic-bezier(.22,.8,.25,1)}
+ .hb-help[open] p{animation:hb-reveal 140ms ease-out}
+ .hb-scroll > *{animation:hb-arrive 280ms cubic-bezier(.22,.8,.25,1)}
+ .hb-app [role="dialog"],.hb-app [role="alertdialog"]{animation:hb-arrive 280ms ease-out}
+ .hb-app [role="progressbar"] > *{transition:width 240ms ease-out}
+}
+@media(prefers-reduced-motion:reduce){.hb-app button,.hb-app button span{transition:none!important}.hb-app button:active:not(:disabled){transform:none}}
+.hb-help{position:relative;font-size:calc(13px * var(--fs));color:var(--label2)}
+.hb-help summary{list-style:none;cursor:pointer;min-height:44px;display:flex;align-items:center;gap:8px;width:fit-content}
+.hb-help summary::-webkit-details-marker{display:none}
+.hb-help summary::before{content:'i';display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:1.5px solid currentColor;border-radius:50%;font:600 12px Georgia,serif}
+.hb-help p{margin:0 0 12px;padding:12px 14px;background:var(--card);border:1px solid var(--sep);border-radius:12px;line-height:1.6;color:var(--label)}
+.hb-help summary:focus-visible,.hb-tabs button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.hb-tabs{background:var(--card)}
+@supports ((backdrop-filter:blur(24px)) or (-webkit-backdrop-filter:blur(24px))){.hb-tabs{background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%)}}
+@media(prefers-reduced-transparency:reduce){.hb-tabs{background:var(--card);-webkit-backdrop-filter:none;backdrop-filter:none}}
+</style>
+</helmet>
+<div class="hb-app" style="{{rootStyle}}">
+
+<div style="padding-top: var(--st); flex-shrink: 0; background: var(--bg)">
+<div style="height: 44px; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; padding: 0 8px">
+<div style="display: flex; min-width: 0">
+<sc-if value="{{nav.back}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{pop}}" style="{{st.navBtn}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.chevL}}"></path></svg><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{nav.backLabel}}</span></button>
+</sc-if>
+</div>
+<div style="font-weight: 600; font-size: calc(17px * var(--fs)); white-space: nowrap">{{nav.inline}}</div>
+<div></div>
+</div>
+</div>
+
+<div class="hb-scroll" key="{{pageKey}}" style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px calc(var(--sb) + 112px * var(--fs)); display: flex; flex-direction: column; gap: 22px">
+<sc-if value="{{nav.large}}" hint-placeholder-val="{{true}}">
+<h1 style="margin: 0 0 -10px; font-size: calc(34px * var(--fs)); line-height: 1.2; font-weight: 700">{{nav.title}}</h1>
+</sc-if>
+
+<sc-for list="{{sections}}" as="sec" hint-placeholder-count="4">
+
+<sc-if value="{{sec.isStrip}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{sec.go}}" style="{{st.strip}}">
+<span style="color: {{sec.color}}; display: flex; flex-shrink: 0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(20px * var(--fs)); height: calc(20px * var(--fs))"><path d="{{sec.icon}}"></path></svg></span>
+<span style="flex: 1; text-align: left">{{sec.text}}</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--label3)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg>
+</button>
+</sc-if>
+
+<sc-if value="{{sec.isStatus}}" hint-placeholder-val="{{false}}">
+<div style="{{st.card}}">
+<div style="display: flex; gap: 12px; padding: 14px 16px; align-items: flex-start">
+<span style="color: {{sec.color}}; display: flex; flex-shrink: 0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(28px * var(--fs)); height: calc(28px * var(--fs))"><path d="{{sec.icon}}"></path></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+<div style="font-weight: 600; font-size: calc(17px * var(--fs)); line-height: 1.3">{{sec.title}}</div>
+<div style="font-size: calc(15px * var(--fs)); line-height: 1.4; color: var(--label2)">{{sec.text}}</div>
+<sc-if value="{{sec.hasProgress}}" hint-placeholder-val="{{false}}">
+<div role="progressbar" aria-label="首次同步进度" aria-valuenow="{{sec.pct}}" aria-valuemin="0" aria-valuemax="100" style="height: 4px; border-radius: 2px; background: var(--fill); overflow: hidden; margin-top: 6px"><div style="{{sec.bar}}"></div></div>
+</sc-if>
+<sc-if value="{{sec.hasActions}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px">
+<sc-for list="{{sec.actions}}" as="a" hint-placeholder-count="1">
+<button type="button" onClick="{{a.go}}" disabled="{{a.disabled}}" style="{{a.style}}">{{a.label}}</button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sec.isHcard}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{sec.go}}" aria-label="{{sec.aria}}" style="{{st.hcard}};background:{{sec.surface}};border-radius:20px">
+<div style="display: flex; align-items: center; gap: 6px; width: 100%">
+<span style="color: {{sec.color}}; display: flex"><svg viewBox="0 0 24 24" fill="{{sec.fill}}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(18px * var(--fs)); height: calc(18px * var(--fs))"><path d="{{sec.icon}}"></path></svg></span>
+<span style="flex: 1; font-weight: 600; font-size: calc(15px * var(--fs)); color: var(--label)">{{sec.name}}</span>
+<span style="font-size: calc(15px * var(--fs)); color: var(--label2)">{{sec.time}}</span>
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--label3)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; width: 100%; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 2px; text-align: left">
+<div style="font-size: calc(13px * var(--fs)); color: var(--label2)">{{sec.sub}}</div>
+<div style="display: flex; align-items: baseline; gap: 3px; flex-wrap: wrap"><span style="{{st.big}}">{{sec.value}}</span><span style="font-size: calc(15px * var(--fs)); font-weight: 600; color: var(--label2)">{{sec.unit}}</span></div>
+</div>
+<span style="{{st.tag}}">示例数据</span>
+</div>
+<div style="width: 100%">
+<div style="{{sec.c.outer}}">
+<div style="{{sec.c.inner}}">
+<sc-for list="{{sec.c.grid}}" as="g" hint-placeholder-count="0"><div style="{{g.line}}"></div></sc-for>
+<sc-for list="{{sec.c.marks}}" as="m" hint-placeholder-count="7"><div style="{{m.style}}"></div></sc-for>
+</div>
+</div>
+<div style="{{sec.c.labelsStyle}}"><sc-for list="{{sec.c.labels}}" as="l" hint-placeholder-count="7"><span style="text-align: center">{{l.t}}</span></sc-for></div>
+</div>
+<sc-if value="{{sec.hasLegend}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-wrap: wrap; gap: 6px 12px; width: 100%">
+<sc-for list="{{sec.legend}}" as="lg" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 5px; font-size: calc(12px * var(--fs)); text-align: left"><span style="width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; background: {{lg.color}}"></span><span style="color: var(--label2)">{{lg.name}}</span></div>
+</sc-for>
+</div>
+</sc-if>
+</button>
+</sc-if>
+
+<sc-if value="{{sec.isSegment}}" hint-placeholder-val="{{false}}">
+<div role="group" aria-label="{{sec.aria}}" style="display: flex; flex-wrap: wrap; gap: 2px; padding: 2px; border-radius: 9px; background: var(--fill)">
+<sc-for list="{{sec.options}}" as="o" hint-placeholder-count="2">
+<button type="button" onClick="{{o.go}}" aria-pressed="{{o.on}}" style="{{o.style}}">{{o.label}}</button>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{sec.isChart}}" hint-placeholder-val="{{false}}">
+<div style="{{st.card}}; padding: 14px 16px 12px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: calc(13px * var(--fs)); color: var(--label2)">{{sec.kicker}}</div>
+<div style="display: flex; align-items: baseline; gap: 3px; flex-wrap: wrap"><span style="{{st.big}}">{{sec.value}}</span><span style="font-size: calc(15px * var(--fs)); font-weight: 600; color: var(--label2)">{{sec.unit}}</span></div>
+<div style="font-size: calc(15px * var(--fs)); color: var(--label2)">{{sec.range}}</div>
+</div>
+<span style="{{st.tag}}">示例数据</span>
+</div>
+<div>
+<div style="{{sec.c.outer}}">
+<sc-for list="{{sec.c.grid}}" as="g" hint-placeholder-count="3"><span style="{{g.label}}">{{g.t}}</span></sc-for>
+<div style="{{sec.c.inner}}">
+<sc-for list="{{sec.c.grid}}" as="g" hint-placeholder-count="3"><div style="{{g.line}}"></div></sc-for>
+<sc-for list="{{sec.c.marks}}" as="m" hint-placeholder-count="7"><div style="{{m.style}}"></div></sc-for>
+</div>
+</div>
+<div style="{{sec.c.labelsStyle}}"><sc-for list="{{sec.c.labels}}" as="l" hint-placeholder-count="7"><span style="text-align: center; white-space: nowrap">{{l.t}}</span></sc-for></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sec.isCode}}" hint-placeholder-val="{{false}}">
+<div>
+<div style="{{st.hdr}}">{{sec.header}}</div>
+<div style="{{st.card}}">
+<pre style="margin: 0; padding: 14px 16px; overflow-x: auto; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: calc(13px * var(--fs)); line-height: 1.5; white-space: pre; color: var(--label)">{{sec.code}}</pre>
+<div style="{{st.sep}}"></div>
+<div style="display: flex">
+<button type="button" onClick="{{sec.copy}}" style="{{st.halfBtn}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.copy}}"></path></svg>复制</button>
+<div style="width: .5px; background: var(--sep)"></div>
+<button type="button" onClick="{{sec.share}}" style="{{st.halfBtn}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.share}}"></path></svg>分享</button>
+</div>
+</div>
+<p style="{{st.ftr}}">{{sec.footer}}</p>
+</div>
+</sc-if>
+
+<sc-if value="{{sec.isEmpty}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 48px 12px 8px">
+<span style="color: var(--gray); display: flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: calc(52px * var(--fs)); height: calc(52px * var(--fs))"><path d="{{sec.icon}}"></path></svg></span>
+<div style="font-weight: 700; font-size: calc(22px * var(--fs)); line-height: 1.25">{{sec.title}}</div>
+<div style="font-size: calc(15px * var(--fs)); line-height: 1.45; color: var(--label2)">{{sec.text}}</div>
+<sc-if value="{{sec.hasBtn}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{sec.go}}" style="{{st.tinted}}; margin-top: 6px">{{sec.btn}}</button>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{sec.isNote}}" hint-placeholder-val="{{false}}">
+<details class="hb-help" onMouseEnter="{{helpEnter}}" onMouseLeave="{{helpLeave}}" onKeyDown="{{helpKey}}"><summary>{{sec.helpLabel}}</summary><p>{{sec.text}}</p></details>
+</sc-if>
+<sc-if value="{{sec.isCriticalNote}}" hint-placeholder-val="{{false}}"><p style="margin:0;padding:0 4px;font-size:calc(15px * var(--fs));line-height:1.5;color:var(--label2)">{{sec.text}}</p></sc-if>
+
+<sc-if value="{{sec.isList}}" hint-placeholder-val="{{false}}">
+<div>
+<sc-if value="{{sec.hasHeader}}" hint-placeholder-val="{{false}}"><div style="{{st.hdr}}">{{sec.header}}</div></sc-if>
+<div style="{{st.card}}">
+<sc-for list="{{sec.rows}}" as="r" hint-placeholder-count="3">
+<sc-if value="{{r.sep}}" hint-placeholder-val="{{false}}"><div style="{{r.sepStyle}}"></div></sc-if>
+<sc-if value="{{r.isToggle}}" hint-placeholder-val="{{false}}">
+<div style="{{st.rowDiv}}">
+<sc-if value="{{r.hasIcon}}" hint-placeholder-val="{{false}}"><span style="{{r.iconBox}}"><svg viewBox="0 0 24 24" fill="{{r.fill}}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{r.iconSize}}"><path d="{{r.icon}}"></path></svg></span></sc-if>
+<span style="flex: 1; min-width: 0">{{r.label}}</span>
+<button type="button" role="switch" aria-checked="{{r.on}}" aria-label="{{r.label}}" onClick="{{r.go}}" style="{{r.track}}"><span style="{{r.knob}}"></span></button>
+</div>
+</sc-if>
+<sc-if value="{{r.isInput}}" hint-placeholder-val="{{false}}">
+<div style="{{st.rowDiv}}; flex-wrap: wrap">
+<label for="{{r.id}}" style="width: calc(56px * var(--fs))">{{r.label}}</label>
+<input id="{{r.id}}" type="password" autocomplete="off" placeholder="INGEST_TOKEN" value="{{r.value}}" onChange="{{r.onInput}}" style="flex: 1; min-width: 140px; border: 0; outline: 0; background: none; font: inherit; color: var(--label); padding: 8px 0">
+</div>
+</sc-if>
+<sc-if value="{{r.isRow}}" hint-placeholder-val="{{true}}">
+<button type="button" onClick="{{r.go}}" disabled="{{r.disabled}}" style="{{r.style}}">
+<sc-if value="{{r.hasIcon}}" hint-placeholder-val="{{false}}"><span style="{{r.iconBox}}"><svg viewBox="0 0 24 24" fill="{{r.fill}}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{r.iconSize}}"><path d="{{r.icon}}"></path></svg></span></sc-if>
+<sc-if value="{{r.hasDot}}" hint-placeholder-val="{{false}}"><span style="width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; background: {{r.dot}}"></span></sc-if>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<span style="overflow-wrap: anywhere">{{r.label}}</span>
+<sc-if value="{{r.hasSub}}" hint-placeholder-val="{{false}}"><span style="font-size: calc(13px * var(--fs)); line-height: 1.35; color: var(--label2)">{{r.sub}}</span></sc-if>
+<sc-if value="{{r.hasBar}}" hint-placeholder-val="{{false}}"><span role="progressbar" aria-label="{{r.label}}" aria-valuenow="{{r.pct}}" aria-valuemin="0" aria-valuemax="100" style="display: block; height: 4px; border-radius: 2px; background: var(--fill); overflow: hidden; margin-top: 3px"><span style="{{r.bar}}"></span></span></sc-if>
+</span>
+<sc-if value="{{r.hasDetail}}" hint-placeholder-val="{{false}}"><span style="{{r.detailStyle}}">{{r.detail}}</span></sc-if>
+<sc-if value="{{r.chev}}" hint-placeholder-val="{{false}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--label3)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="{{ic.chevR}}"></path></svg></sc-if>
+<sc-if value="{{r.ext}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--label3)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="{{ic.ext}}"></path></svg></sc-if>
+<sc-if value="{{r.check}}" hint-placeholder-val="{{false}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="{{ic.check}}"></path></svg></sc-if>
+</button>
+</sc-if>
+</sc-for>
+</div>
+<sc-if value="{{sec.hasFooter}}" hint-placeholder-val="{{false}}"><p style="{{st.ftr}}">{{sec.footer}}</p></sc-if>
+<sc-if value="{{sec.hasHelp}}" hint-placeholder-val="{{false}}"><details class="hb-help" onMouseEnter="{{helpEnter}}" onMouseLeave="{{helpLeave}}" onKeyDown="{{helpKey}}"><summary>{{sec.helpLabel}}</summary><p>{{sec.footer}}</p></details></sc-if>
+</div>
+</sc-if>
+
+</sc-for>
+</div>
+
+<nav class="hb-tabs" aria-label="主导航" style="position:absolute;left:16px;right:16px;bottom:max(12px,var(--sb));display:flex;padding:6px;border-radius:36px;border:1px solid var(--glassEdge);box-shadow:0 8px 28px rgba(0,0,0,.12),inset 0 1px 0 var(--glassEdge)">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button type="button" onClick="{{t.go}}" aria-current="{{t.current}}" style="{{t.style}}">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 26px; height: 26px"><path d="{{t.icon}}"></path></svg>
+<span>{{t.label}}</span>
+</button>
+</sc-for>
+</nav>
+
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{false}}">
+<div role="status" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(var(--sb) + 64px); max-width: 80%; padding: 10px 16px; border-radius: 20px; background: var(--hud); color: var(--label); font-size: calc(15px * var(--fs)); text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,.12); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px)">{{toast}}</div>
+</sc-if>
+
+<sc-if value="{{dlg.isAlert}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; background: var(--dim); display: flex; align-items: center; justify-content: center; padding: 24px">
+<div role="alertdialog" aria-label="{{dlg.title}}" style="width: 270px; max-width: 100%; border-radius: 14px; background: var(--alert); -webkit-backdrop-filter: blur(30px); backdrop-filter: blur(30px); overflow: hidden; text-align: center">
+<div style="padding: 19px 16px 18px; display: flex; flex-direction: column; gap: 4px">
+<div style="font-weight: 600; font-size: calc(17px * var(--fs)); line-height: 1.3">{{dlg.title}}</div>
+<div style="font-size: calc(13px * var(--fs)); line-height: 1.4">{{dlg.message}}</div>
+</div>
+<div style="{{dlg.rowStyle}}">
+<sc-for list="{{dlg.actions}}" as="a" hint-placeholder-count="2">
+<button type="button" onClick="{{a.go}}" style="{{a.style}}">{{a.label}}</button>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{dlg.isSheet}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; background: var(--dim); display: flex; flex-direction: column; justify-content: flex-end; padding: 0 8px calc(var(--sb) + 8px)">
+<div role="dialog" aria-label="{{dlg.title}}" style="display: flex; flex-direction: column; gap: 8px">
+<div style="border-radius: 14px; background: var(--alert); -webkit-backdrop-filter: blur(30px); backdrop-filter: blur(30px); overflow: hidden">
+<div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; text-align: center; color: var(--label2)">
+<div style="font-weight: 600; font-size: calc(13px * var(--fs))">{{dlg.title}}</div>
+<div style="font-size: calc(13px * var(--fs)); line-height: 1.4">{{dlg.message}}</div>
+</div>
+<sc-for list="{{dlg.actions}}" as="a" hint-placeholder-count="1">
+<button type="button" onClick="{{a.go}}" style="{{a.style}}">{{a.label}}</button>
+</sc-for>
+</div>
+<button type="button" onClick="{{closeDialog}}" style="{{st.sheetCancel}}">取消</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetOn}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; background: var(--dim); display: flex; flex-direction: column; justify-content: flex-end">
+<dc-import name="Onboarding" embedded="{{true}}" start="{{sheetStart}}" reconsent="{{sheetReconsent}}" dark="{{darkProp}}" text-scale="{{scaleProp}}" device="{{deviceProp}}" on-finish="{{sheetFinish}}" on-cancel="{{sheetCancel}}" hint-size="100%,783px"></dc-import>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scenario":{"editor":"enum","options":["normal","locked","stale","token","unreachable","outdated","local","revoked","nodata","backfill"],"default":"normal"},"tab":{"editor":"enum","options":["overview","sync","settings"],"default":"overview"},"page":{"editor":"enum","options":["","d-sleep","d-hr","d-rhr","d-hrv","d-steps","server","types","range","agent","consent","delete","disconnect"],"default":""},"dialog":{"editor":"enum","options":["","revoke","delete","disconnect","typeoff"],"default":""},"dark":{"editor":"boolean","default":false},"textScale":{"editor":"enum","options":["1","1.35","1.65"],"default":"1"},"device":{"editor":"enum","options":["6.1","se"],"default":"6.1"},"alsoDelete":{"editor":null},"tokenEdit":{"editor":null},"$preview":{"width":393,"height":852}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const tab = props.tab || 'overview';
+    const stacks = { overview: [], sync: [], settings: [] };
+    if (props.page) stacks[tab] = [props.page];
+    this.uid = 'hb' + Math.random().toString(36).slice(2, 8);
+    this.state = {
+      scenario: props.scenario || 'normal', tab: tab, stacks: stacks, dialog: props.dialog || null, offType: 'hr',
+      sheet: null, types: { sleep: true, hr: true, rhr: true, hrv: true, steps: true }, range: '30', client: 'claude',
+      span: 'week', toast: '', syncing: false, justSynced: false, retried: false, testing: false, tokenEdit: props.tokenEdit === true,
+      newToken: '', alsoDelete: props.alsoDelete === true, deleted: false, consentAt: '2026年11月3日 09:12',
+      prog: { sleep: 1, hr: 0.46, rhr: 1, hrv: 1, steps: 0.72 }
+    };
+  }
+  componentWillUnmount() { clearTimeout(this.t1); clearTimeout(this.t2); clearInterval(this.timer); }
+  toast(msg) {
+    clearTimeout(this.t2);
+    this.setState({ toast: msg });
+    this.t2 = setTimeout(() => this.setState({ toast: '' }), 1800);
+  }
+  runBackfill(fromZero) {
+    clearInterval(this.timer);
+    const speed = { sleep: 0.16, hr: 0.03, rhr: 0.4, hrv: 0.22, steps: 0.07 };
+    if (fromZero) this.setState({ prog: { sleep: 0, hr: 0, rhr: 0, hrv: 0, steps: 0 } });
+    this.setState({ syncing: true });
+    this.timer = setInterval(() => {
+      const p = { ...this.state.prog };
+      let done = true;
+      Object.keys(p).forEach((k) => { p[k] = Math.min(1, p[k] + speed[k]); if (p[k] < 1) done = false; });
+      this.setState({ prog: p });
+      if (done) {
+        clearInterval(this.timer);
+        this.setState({ scenario: 'normal', syncing: false, justSynced: true });
+        this.toast('首次同步已完成');
+      }
+    }, 180);
+  }
+  theme() {
+    const p = this.props;
+    const dark = p.dark === true || p.dark === 'true';
+    const se = p.device === 'se';
+    const fs = parseFloat(p.textScale) || 1;
+    const d = se ? { w: 375, h: 667, st: 20, sb: 0 } : { w: 393, h: 852, st: 59, sb: 34 };
+    const c = dark ? {
+      bg:'#171F20',card:'#242F30',label:'#F4F0E8',label2:'#B8C4BE',label3:'#81978E',
+      sep:'rgba(184,207,196,.19)',fill:'rgba(171,198,182,.13)',fill2:'rgba(171,198,182,.23)',seg:'#425951',blue:'#AECDBA',red:'#ED9FAD',orange:'#DFB575',
+      yellow:'#E8D392',green:'#A2C598',indigo:'#B8A2D2',cyan:'#9EBFD1',purple:'#C4A4C4',gray:'#A2B0A7',
+      glass:'rgba(38,54,51,.76)',glassEdge:'rgba(199,219,200,.22)',glassActive:'rgba(178,207,186,.18)',bar:'#242F30',alert:'#303D3B',hud:'#354640',dim:'rgba(5,14,14,.58)'
+    } : {
+      bg:'#F4EFE9',card:'#FFFCF7',label:'#293E38',label2:'#58685F',label3:'#809287',
+      sep:'rgba(82,111,94,.18)',fill:'#E7EBDF',fill2:'#D8E0D3',seg:'#FFFCF7',blue:'#466D5C',red:'#A04E66',orange:'#936321',
+      yellow:'#B39B4D',green:'#527846',indigo:'#715D91',cyan:'#4B7189',purple:'#8B6389',gray:'#687B70',
+      glass:'rgba(250,248,237,.74)',glassEdge:'rgba(255,255,247,.9)',glassActive:'rgba(127,163,143,.22)',bar:'#F4EFE9',alert:'#F7F2E9',hud:'#F1F3E9',dim:'rgba(36,56,47,.24)'
+    };
+    const vars = Object.keys(c).map((k) => '--' + k + ':' + c[k]).join(';');
+    return {
+      dark: dark, fs: fs, se: se,
+      root: 'width:' + d.w + 'px;height:' + d.h + 'px;--st:' + d.st + 'px;--sb:' + d.sb + 'px;--fs:' + fs + ';' + vars +
+        ';position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--bg);color:var(--label);' +
+        'font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased'
+    };
+  }
+  icons() {
+    return {
+      chevL: 'M15 5l-7 7 7 7', chevR: 'M9 5l7 7-7 7', ext: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6', check: 'M5 12.5l4.5 4.5L19 7',
+      heart: 'M12 20.5s-8-4.7-8-11a4.6 4.6 0 0 1 8-3.1 4.6 4.6 0 0 1 8 3.1c0 6.3-8 11-8 11z',
+      heartSlash: 'M12 20.5s-8-4.7-8-11c0-1.1.4-2.1 1-2.9M8.4 4.9A4.6 4.6 0 0 1 12 6.4a4.6 4.6 0 0 1 8 3.1c0 2.3-1.1 4.4-2.5 6.1M3 3l18 18',
+      bed: 'M3 6v13M3 15h18v4M21 15v-2a3 3 0 0 0-3-3h-7v5M7 12.5a1.5 1.5 0 1 0 0-.01',
+      ecg: 'M2 12h4l2.5-6 4 12 2.5-6H22', walk: 'M13.5 5.5a1.5 1.5 0 1 0 0-.01M9 21l2.5-6.5 2.5 2.5v4M11.5 14.5l1.2-5.5 2.8 2.5h3M8 12l2-3.5 2.7.5',
+      overview: 'M7 3.5h10A3.5 3.5 0 0 1 20.5 7v10a3.5 3.5 0 0 1-3.5 3.5H7A3.5 3.5 0 0 1 3.5 17V7A3.5 3.5 0 0 1 7 3.5zM7 13h2.5l1.5-3.5 2.5 6 1.5-2.5H17',
+      sync: 'M4 12a8 8 0 0 1 13.7-5.6L20 8.5M20 3.5v5h-5M20 12a8 8 0 0 1-13.7 5.6L4 15.5M4 20.5v-5h5',
+      gear: 'M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z',
+      server: 'M4 4.5h16v6.5H4zM4 13h16v6.5H4zM8 7.75h.01M8 16.25h.01', list: 'M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01',
+      calendar: 'M4 5.5h16v15H4zM4 10h16M8 3v4M16 3v4', sparkle: 'M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z',
+      shield: 'M12 3l8 3v6c0 4.8-3.4 8-8 9-4.6-1-8-4.2-8-9V6zM8.5 12l2.5 2.5 4.5-5', doc: 'M6 3h9l4 4v14H6zM9 12h7M9 16h7', info: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v5.5M12 7.75h.01',
+      hammer: 'M14 6l4 4M4 20l9-9M11 4l5-1 5 5-1 5-3-3-4 4-4-4 4-4z', copy: 'M9 9h11v11H9zM5 15H4V4h11v1', share: 'M12 3v12M8 7l4-4 4 4M5 11v9h14v-9',
+      lock: 'M6 11h12v9.5H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3', clock: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3.5 2',
+      checkC: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12.5l2.8 2.8L16.5 9', xC: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM9 9l6 6M15 9l-6 6',
+      pauseC: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM10 9v6M14 9v6', iphone: 'M8 2.5h8a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-15a2 2 0 0 1 2-2zM11 18.5h2',
+      wifiOff: 'M2.5 8.8a14.5 14.5 0 0 1 19 0M5.5 12.4a10 10 0 0 1 13 0M9 15.9a5 5 0 0 1 6 0M12 19.5h.01M3 3l18 18', warn: 'M12 3.5l9.5 16.5h-19zM12 10v4.5M12 17.25h.01',
+      upArrow: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 16V8M8.5 11.5L12 8l3.5 3.5'
+    };
+  }
+  sw(on) {
+    return {
+      track: 'width:51px;height:31px;border-radius:16px;border:0;padding:2px;flex-shrink:0;cursor:pointer;display:flex;transition:background .2s;background:' + (on ? 'var(--green)' : 'var(--fill2)'),
+      knob: 'width:27px;height:27px;border-radius:50%;background:#FFFFFF;box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16);transition:transform .2s;transform:translateX(' + (on ? 20 : 0) + 'px)'
+    };
+  }
+  chart(o) {
+    const n = o.data.length;
+    const pr = o.axis ? 40 : 0;
+    const yp = (v) => Math.max(0, Math.min(100, ((v - o.min) / (o.max - o.min)) * 100));
+    const slot = 100 / n;
+    const bw = slot * (o.bw || 0.58);
+    const marks = [];
+    o.data.forEach((d, i) => {
+      if (d === null) return;
+      const cx = slot * i + slot / 2;
+      const op = o.dimAll && i !== n - 1 ? 0.55 : 1;
+      if (o.kind === 'bar') marks.push({ style: 'position:absolute;left:' + (cx - bw / 2) + '%;width:' + bw + '%;bottom:0;height:' + yp(d) + '%;background:' + o.color + ';border-radius:4px 4px 1px 1px;opacity:' + op });
+      if (o.kind === 'range') marks.push({ style: 'position:absolute;left:calc(' + cx + '% - 4px);width:8px;bottom:' + yp(d[0]) + '%;height:' + (yp(d[1]) - yp(d[0])) + '%;min-height:8px;border-radius:4px;background:' + o.color });
+      if (o.kind === 'dot') marks.push({ style: 'position:absolute;left:calc(' + cx + '% - 5px);bottom:calc(' + yp(d) + '% - 5px);width:10px;height:10px;border-radius:50%;background:' + o.color + ';opacity:' + op });
+      if (o.kind === 'stack') {
+        let acc = 0;
+        d.forEach((v, k) => {
+          marks.push({ style: 'position:absolute;left:' + (cx - bw / 2) + '%;width:' + bw + '%;bottom:' + yp(acc) + '%;height:' + (yp(acc + v) - yp(acc)) + '%;background:' + o.colors[k] + (k === d.length - 1 ? ';border-radius:4px 4px 0 0' : '') });
+          acc += v;
+        });
+      }
+    });
+    if (o.kind === 'hypno') {
+      const total = o.segs.reduce((a, g) => a + g.m, 0);
+      let t = 0;
+      o.segs.forEach((g) => {
+        marks.push({ style: 'position:absolute;left:' + (t / total * 100) + '%;width:' + (g.m / total * 100) + '%;top:' + (g.lane * 25 + 3) + '%;height:19%;border-radius:2px;background:' + o.colors[g.lane] });
+        t += g.m;
+      });
+    }
+    const grid = (o.grid || []).map((g) => ({
+      line: g.noLine ? 'display:none' : 'position:absolute;left:0;right:0;bottom:' + yp(g.v) + '%;border-top:.5px solid var(--sep)',
+      label: 'position:absolute;right:0;width:' + (pr - 4) + 'px;bottom:calc(' + yp(g.v) + '% - 8px);font-size:calc(11px * var(--fs));line-height:16px;color:var(--label2);text-align:left',
+      t: g.t
+    }));
+    return {
+      outer: 'position:relative;height:' + o.h + 'px',
+      inner: 'position:absolute;left:0;top:0;bottom:0;right:' + pr + 'px',
+      marks: marks, grid: grid,
+      labels: (o.labels || []).map((t) => ({ t: t })),
+      labelsStyle: o.spread
+        ? 'display:flex;justify-content:space-between;padding-right:' + pr + 'px;margin-top:6px;font-size:calc(11px * var(--fs));color:var(--label2)'
+        : 'display:grid;grid-template-columns:repeat(' + (o.labels || []).length + ',minmax(0,1fr));padding-right:' + pr + 'px;margin-top:6px;font-size:calc(11px * var(--fs));color:var(--label2)'
+    };
+  }
+  renderVals() {
+    const s = this.state;
+    const th = this.theme();
+    const ic = this.icons();
+    const sc = s.scenario;
+    const mode = sc === 'local' ? 'local' : (sc === 'revoked' ? 'revoked' : 'sync');
+    const fsz = (px) => 'font-size:calc(' + px + 'px * var(--fs))';
+    const btnBase = 'border:0;font:inherit;cursor:pointer;';
+    const st = {
+      navBtn: 'display:flex;align-items:center;gap:2px;min-height:44px;max-width:100%;padding:0 8px;background:none;border:0;font:inherit;' + fsz(17) + ';color:var(--blue);cursor:pointer',
+      card: 'background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 2px 10px rgba(45,66,53,.035)',
+      hdr: fsz(13) + ';color:var(--label2);padding:0 16px 7px',
+      ftr: 'margin:7px 0 0;' + fsz(13) + ';line-height:1.4;color:var(--label2);padding:0 16px',
+      sep: 'height:.5px;background:var(--sep);margin-left:16px',
+      rowDiv: 'display:flex;align-items:center;gap:12px;min-height:44px;padding:6px 16px;box-sizing:border-box;' + fsz(17),
+      strip: btnBase + 'display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:10px 14px;box-sizing:border-box;border-radius:10px;background:var(--card);color:var(--label);' + fsz(15),
+      hcard: btnBase + 'display:flex;flex-direction:column;gap:10px;width:100%;padding:12px 16px 14px;box-sizing:border-box;border-radius:10px;background:var(--card);color:var(--label);text-align:left',
+      big: 'font-family:ui-rounded,-apple-system,"SF Pro Rounded","PingFang SC",sans-serif;font-weight:600;' + fsz(28) + ';line-height:1.15;font-variant-numeric:tabular-nums',
+      tag: 'flex-shrink:0;border-radius:6px;padding:2px 6px;background:var(--fill);color:var(--label2);' + fsz(11),
+      tinted: btnBase + 'min-height:34px;padding:7px 14px;border-radius:17px;background:var(--fill);color:var(--blue);font-weight:600;' + fsz(15),
+      tintedOff: btnBase + 'min-height:34px;padding:7px 14px;border-radius:17px;background:var(--fill);color:var(--label3);font-weight:600;cursor:default;' + fsz(15),
+      halfBtn: btnBase + 'flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;background:none;color:var(--blue);' + fsz(17),
+      sheetCancel: btnBase + 'width:100%;min-height:57px;border-radius:14px;background:var(--card);color:var(--blue);font-weight:600;' + fsz(20)
+    };
+    const T = [
+      { id: 'sleep', name: '睡眠', color: 'var(--cyan)', icon: ic.bed, fill: 'none', latest: '今天 07:14', count: 1236, total: 412 },
+      { id: 'hr', name: '心率', color: 'var(--red)', icon: ic.heart, fill: 'currentColor', latest: '09:21', count: 116842, total: 38412 },
+      { id: 'rhr', name: '静息心率', color: 'var(--red)', icon: ic.heart, fill: 'currentColor', latest: '今天 06:58', count: 92, total: 30 },
+      { id: 'hrv', name: '心率变异性', color: 'var(--red)', icon: ic.ecg, fill: 'none', latest: '08:47', count: 561, total: 186 },
+      { id: 'steps', name: '步数', color: 'var(--orange)', icon: ic.walk, fill: 'none', latest: '09:15', count: 11708, total: 3904 }
+    ];
+    const on = T.filter((t) => s.types[t.id]);
+    const totalCount = s.deleted ? 0 : on.reduce((a, t) => a + t.count, 0);
+    const fmt = (n) => n.toLocaleString('zh-CN');
+    const host = 'health-mcp.example.workers.dev';
+    const stack = s.stacks[s.tab];
+    const page = stack.length ? stack[stack.length - 1] : s.tab;
+    const tabTitles = { overview: '概览', sync: '同步', settings: '设置' };
+    const pageTitles = { server: '服务器', types: '数据类型', range: '首次同步范围', agent: '连接 AI Agent', consent: '数据共享同意', delete: '删除服务器数据', disconnect: '断开连接' };
+    T.forEach((t) => { pageTitles['d-' + t.id] = t.name; });
+    const titleOf = (p) => tabTitles[p] || pageTitles[p] || '';
+    const push = (p) => this.setState({ stacks: { ...s.stacks, [s.tab]: s.stacks[s.tab].concat([p]) } });
+    const goTab = (t) => this.setState({ tab: t, stacks: t === s.tab ? { ...s.stacks, [t]: [] } : s.stacks });
+    const openSheet = (k) => this.setState({ sheet: k });
+
+    const tinted = (label, go, disabled) => ({ label: label, go: go, disabled: !!disabled, style: disabled ? st.tintedOff : st.tinted });
+    const syncNow = () => {
+      if (s.syncing) return;
+      if (sc === 'backfill') { this.runBackfill(false); return; }
+      this.setState({ syncing: true });
+      clearTimeout(this.t1);
+      this.t1 = setTimeout(() => {
+        const cur = this.state.scenario;
+        const ok = ['normal', 'stale', 'locked', 'nodata'].indexOf(cur) >= 0;
+        this.setState({ syncing: false, scenario: ok ? (cur === 'nodata' ? 'nodata' : 'normal') : cur, justSynced: ok, retried: !ok });
+        this.toast(ok ? '同步完成' : '本次仍未完成，原因见上方');
+      }, 1200);
+    };
+    const progTotal = on.reduce((a, t) => a + t.total, 0);
+    const progDone = on.reduce((a, t) => a + t.total * (s.prog[t.id] || 0), 0);
+    const pct = progTotal ? Math.round(progDone / progTotal * 100) : 0;
+    const tryAgo = s.retried ? '刚刚' : '09:30';
+    const S = {
+      normal: { icon: ic.checkC, color: 'var(--green)', title: '已同步', text: s.justSynced ? '上次上传 · 刚刚' : '上次上传 · 12 分钟前', strip: s.justSynced ? '已同步 · 刚刚' : '已同步 · 12 分钟前' },
+      locked: { icon: ic.lock, color: 'var(--gray)', title: '正在补齐锁定期间的数据', text: 'iPhone 锁定时，iOS 不允许读取健康数据，00:40 之后的后台同步因此推迟。现在 iPhone 已解锁，正在补齐。', strip: '正在补齐锁定期间的数据 · 上次上传 00:40' },
+      stale: { icon: ic.clock, color: 'var(--orange)', title: '超过 24 小时未同步', text: '上次上传：昨天 08:05（25 小时前）。可能的原因：App 被从后台上划关闭、「后台 App 刷新」已关闭，或网络不可用。打开 App 时会自动尝试同步。', strip: '超过 24 小时未同步 · 上次上传昨天 08:05' },
+      token: { icon: ic.xC, color: 'var(--red)', title: '写入 Token 无效', text: '服务器拒绝了本机保存的 Token（401），新数据没有上传。上次成功上传：今天 06:12。最近一次尝试：' + tryAgo + '。', strip: '同步未完成 · 写入 Token 无效' },
+      unreachable: { icon: ic.wifiOff, color: 'var(--orange)', title: '无法连接服务器', text: '最近一次尝试（' + tryAgo + '）无法访问 ' + host + '。上次成功上传：今天 08:47。网络恢复或服务器可访问后会自动重试。', strip: '同步未完成 · 无法连接服务器' },
+      outdated: { icon: ic.upArrow, color: 'var(--orange)', title: '服务端版本需要更新', text: '服务器的数据格式版本是 0，本 App 需要 1 或更高（版本号为示例），上传已暂停。更新 Worker 后会自动继续。', strip: '同步未完成 · 服务端版本需要更新' },
+      local: { icon: ic.iphone, color: 'var(--gray)', title: '本机模式', text: '健康数据只在这台 iPhone 上显示，不会上传到任何服务器。', strip: '本机模式 · 数据不会上传' },
+      revoked: { icon: ic.pauseC, color: 'var(--gray)', title: '同步已暂停', text: '你已撤回数据共享同意（今天 09:35），App 不再上传。服务器上已有的数据仍保留，已接入的 AI Agent 仍可读取。', strip: '同步已暂停 · 已撤回数据共享同意' },
+      nodata: { icon: ic.info, color: 'var(--gray)', title: '没有可上传的数据', text: '「健康」没有返回所选类型的任何记录。请确认已在「设置 › 健康 › 数据访问与设备 › HealthBridge」打开这些类型。', strip: '已连接 · 没有可上传的健康数据' },
+      backfill: { icon: ic.sync, color: 'var(--blue)', title: '首次同步中 · 已完成 ' + pct + '%', text: '正在上传最近 30 天的数据。保持 App 打开可以更快完成；被系统挂起后，下次唤醒或打开 App 时会从中断处继续。', strip: '首次同步中 · 已完成 ' + pct + '%' }
+    };
+    const stat = S[sc] || S.normal;
+    if (s.syncing && sc !== 'backfill') { stat.title = '正在同步…'; }
+    const statusActions = {
+      normal: [tinted(s.syncing ? '正在同步…' : '立即同步', syncNow, s.syncing)],
+      locked: [tinted(s.syncing ? '正在同步…' : '立即同步', syncNow, s.syncing)],
+      stale: [tinted(s.syncing ? '正在同步…' : '立即同步', syncNow, s.syncing)],
+      nodata: [tinted('打开“设置”', () => this.toast('将打开 iOS「设置」'))],
+      token: [tinted('更新 Token', () => this.setState({ tab: 'settings', stacks: { ...s.stacks, settings: ['server'] }, tokenEdit: true })), tinted(s.syncing ? '正在重试…' : '重试', syncNow, s.syncing)],
+      unreachable: [tinted(s.syncing ? '正在重试…' : '重试', syncNow, s.syncing), tinted('检查服务器配置', () => this.setState({ tab: 'settings', stacks: { ...s.stacks, settings: ['server'] } }))],
+      outdated: [tinted('查看更新说明', () => this.toast('将在 Safari 中打开部署说明')), tinted(s.syncing ? '正在检查…' : '重新检查', syncNow, s.syncing)],
+      local: [tinted('连接服务器', () => openSheet('connect'))],
+      revoked: [tinted('重新同意', () => openSheet('consent'))],
+      backfill: [tinted(s.syncing ? '正在上传…' : '继续上传', syncNow, s.syncing)]
+    };
+
+    const sec = (o) => ({ isStrip: false, isStatus: false, isHcard: false, isSegment: false, isChart: false, isCode: false, isEmpty: false, isNote: false, isList: false, ...o });
+    const row = (o, i, withIcon) => {
+      const r = { isRow: true, isToggle: false, isInput: false, hasIcon: !!o.icon, hasDot: !!o.dot, hasSub: !!o.sub, hasDetail: o.detail !== undefined && o.detail !== '', hasBar: o.bar !== undefined, chev: !!o.chev, ext: !!o.ext, check: !!o.check, disabled: !!o.disabled, fill: 'none', go: () => {}, ...o };
+      r.sep = i > 0;
+      r.sepStyle = 'height:.5px;background:var(--sep);margin-left:' + (withIcon ? 'calc(16px + 12px + 29px * var(--fs))' : '16px');
+      r.style = 'display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:10px 16px;box-sizing:border-box;background:none;border:0;font:inherit;' + fsz(17) + ';text-align:left;cursor:' + (o.go ? 'pointer' : 'default') + ';color:' + (o.disabled ? 'var(--label3)' : o.red ? 'var(--red)' : o.blue ? 'var(--blue)' : 'var(--label)');
+      r.detailStyle = 'color:var(--label2);text-align:right;flex-shrink:1;min-width:0;overflow-wrap:anywhere;' + (o.mono ? 'font-family:ui-monospace,Menlo,monospace;' + fsz(15) : '');
+      r.iconBox = o.square ? 'width:calc(29px * var(--fs));height:calc(29px * var(--fs));border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:' + (th.dark ? '#1E352A' : '#FFFFFF') + ';background:' + o.square : 'display:flex;flex-shrink:0;color:' + (o.iconColor || 'var(--label2)');
+      r.iconSize = o.square ? 'width:calc(18px * var(--fs));height:calc(18px * var(--fs))' : 'width:calc(24px * var(--fs));height:calc(24px * var(--fs))';
+      if (o.bar !== undefined) r.bar = 'display:block;height:100%;border-radius:2px;background:' + (o.bar >= 1 ? 'var(--green)' : 'var(--blue)') + ';width:' + (o.bar * 100).toFixed(1) + '%';
+      if (o.toggle) { r.isRow = false; r.isToggle = true; Object.assign(r, this.sw(o.on)); }
+      if (o.input) { r.isRow = false; r.isInput = true; }
+      return r;
+    };
+    const list = (header, rows, footer, withIcon) => {
+      const critical = /删除|撤回|停止|关闭的类型|不会上传/.test(footer || '');
+      return sec({ isList: true, header: header || '', hasHeader: !!header, footer: footer || '', hasFooter: !!footer && critical, hasHelp: !!footer && !critical, helpLabel: header ? header + '说明' : '了解更多', rows: rows.map((o, i) => row(o, i, withIcon)) });
+    };
+    const status = () => {
+      const a = statusActions[sc] || [];
+      return sec({ isStatus: true, ...stat, hasActions: a.length > 0, actions: a, hasProgress: sc === 'backfill', pct: pct,
+        bar: 'height:100%;border-radius:2px;background:var(--blue);width:' + pct + '%' });
+    };
+    const empty = (o) => sec({ isEmpty: true, hasBtn: !!o.btn, ...o });
+
+    const week = ['三', '四', '五', '六', '日', '一', '二'];
+    const monthLabels = ['10/5', '', '', '', '', '', '', '10/12', '', '', '', '', '', '', '10/19', '', '', '', '', '', '', '10/26', '', '', '', '', '', '', '11/2', ''];
+    const gen = (base, amp, seed, w) => {
+      const out = [];
+      for (let i = 0; i < 30; i++) out.push(base + amp * (Math.sin(i * 1.7 + seed) * 0.6 + Math.sin(i * 0.53 + seed * 2) * 0.4));
+      return out.slice(0, 23).concat(w);
+    };
+    const W = {
+      sleep: [6.6, 7.4, 6.9, 7.8, 6.2, 7.0, 7.2], rhr: [59, 57, 60, 58, 56, 59, 58], hrv: [38, 45, 41, 47, 36, 44, 42],
+      steps: [6210, 9874, 7532, 11203, 5480, 10012, 8436], hr: [[48, 142], [50, 121], [49, 135], [51, 156], [47, 118], [50, 138], [52, 128]]
+    };
+    const M = {
+      sleep: gen(7, 0.7, 1, W.sleep).map((v) => Math.round(v * 10) / 10), rhr: gen(58, 2.5, 2, W.rhr).map(Math.round), hrv: gen(42, 6, 3, W.hrv).map(Math.round),
+      steps: gen(8600, 2600, 4, W.steps).map(Math.round), hr: gen(50, 2, 5, [0, 0, 0, 0, 0, 0, 0]).map((v, i) => i >= 23 ? W.hr[i - 23] : [Math.round(v), Math.round(120 + 18 * Math.sin(i * 1.3))])
+    };
+    const hm = (h) => { const m = Math.round(h * 60); return Math.floor(m / 60) + ' 小时 ' + (m % 60) + ' 分'; };
+    const mins = (m) => (m >= 60 ? Math.floor(m / 60) + ' 小时 ' : '') + (m % 60) + ' 分';
+    const stageColors = th.dark ? ['#B67824','#2397B9','#4F7D38','#8660B5'] : ['#B67824','#2397B9','#4F7D38','#7650A5'];
+    const stages = [
+      { name: '清醒', m: 21, color: stageColors[0] }, { name: '快速动眼', m: 98, color: stageColors[1] },
+      { name: '核心', m: 261, color: stageColors[2] }, { name: '深度', m: 73, color: stageColors[3] }
+    ];
+    const segs = [[2, 18], [3, 32], [2, 40], [1, 14], [0, 3], [2, 35], [3, 25], [2, 30], [1, 20], [0, 4], [2, 38], [3, 16], [2, 30], [1, 26], [0, 5], [2, 36], [1, 38], [0, 9], [2, 34]].map((x) => ({ lane: x[0], m: x[1] }));
+    const hrToday = [[55, 68], [52, 61], [53, 64], [58, 96], [66, 128], null, null, null, null, null, null, null];
+
+    const cards = {
+      sleep: { time: '今天 07:14', sub: '昨晚 · 23:41–07:14', value: '7 小时 12 分', unit: '', c: this.chart({ kind: 'hypno', segs: segs, colors: stageColors, data: [], h: 64, labels: ['23:41', '07:14'], spread: true }),
+        legend: stages.map((g) => ({ name: g.name, value: mins(g.m), color: g.color })) },
+      hr: { time: '09:21', sub: '今天范围 · 最近 71 次/分', value: '52–128', unit: '次/分', c: this.chart({ kind: 'range', data: hrToday, min: 40, max: 140, h: 64, labels: ['0时', '', '', '6时', '', '', '12时', '', '', '18时', '', ''], color: 'var(--red)' }) },
+      rhr: { time: '今天 06:58', sub: '今天', value: '58', unit: '次/分', c: this.chart({ kind: 'dot', data: W.rhr, min: 50, max: 64, h: 56, labels: week, color: 'var(--red)', dimAll: true }) },
+      hrv: { time: '08:47', sub: '今天平均', value: '42', unit: '毫秒', c: this.chart({ kind: 'bar', data: W.hrv, min: 0, max: 55, h: 56, labels: week, color: 'var(--red)', dimAll: true }) },
+      steps: { time: '09:15', sub: '今天，截至 09:40', value: '8,436', unit: '步', c: this.chart({ kind: 'bar', data: W.steps, min: 0, max: 12000, h: 56, labels: week, color: 'var(--orange)', dimAll: true }) }
+    };
+
+    let sections = [];
+    const stripGo = () => goTab('sync');
+
+    if (page === 'overview') {
+      sections.push(sec({ isStrip: true, icon: stat.icon, color: stat.color, text: stat.strip, go: stripGo }));
+      if (sc === 'nodata') {
+        sections.push(empty({ icon: ic.heartSlash, title: '没有可显示的健康数据', text: 'iOS 不会告诉 App 是否获得了读取权限。请前往「设置 › 健康 › 数据访问与设备 › HealthBridge」，确认所需类型已打开；也请确认「健康」App 中有这些记录。', btn: '打开“设置”', go: () => this.toast('将打开 iOS「设置」') }));
+      } else {
+        on.forEach((t) => {
+          const c = cards[t.id];
+          const surfaces = th.dark ? {sleep:'#293136',hr:'#352D31',rhr:'#352D31',hrv:'#302E38',steps:'#30362C'} : {sleep:'#E9EEF0',hr:'#F3E7E9',rhr:'#F3E7E9',hrv:'#EEEBF2',steps:'#EDF0E4'};
+          sections.push(sec({ isHcard: true, name: t.name, color: t.color, icon: t.icon, fill: t.fill, surface:surfaces[t.id], ...c, hasLegend: !!c.legend, legend: c.legend || [],
+            aria: t.name + '，' + c.value + c.unit + '，示例数据', go: () => push('d-' + t.id) }));
+        });
+        sections.push(sec({ isNote: true, text: '概览直接读取这台 iPhone 上的「健康」数据，不依赖服务器。原型中的数值均为示例。' }));
+      }
+    }
+
+    if (page.indexOf('d-') === 0) {
+      const id = page.slice(2);
+      const t = T.find((x) => x.id === id);
+      const month = s.span === 'month';
+      const vals = month ? M[id] : W[id];
+      const labels = month ? monthLabels : week;
+      const rangeTxt = month ? '2026年10月5日–11月3日' : '10月28日–11月3日';
+      sections.push(sec({ isSegment: true, aria: '时间范围', options: [['week', '周'], ['month', '月']].map((o) => ({
+        label: o[1], on: s.span === o[0], go: () => this.setState({ span: o[0] }),
+        style: btnBase + 'flex:1;min-height:32px;border-radius:7px;' + fsz(13) + ';font-weight:' + (s.span === o[0] ? 600 : 400) + ';color:var(--label);background:' + (s.span === o[0] ? 'var(--seg);box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04)' : 'none')
+      })) }));
+      const avg = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+      let ch;
+      if (id === 'sleep') {
+        const st3 = vals.map((v, i) => { const k = 0.15 + 0.04 * Math.sin(i * 2.1); const r = 0.22 + 0.03 * Math.cos(i * 1.3); return [v * k, v * (1 - k - r), v * r]; });
+        ch = { kicker: '平均睡眠时间', value: hm(avg(vals)), unit: '', range: rangeTxt,
+          c: this.chart({ kind: 'stack', data: st3, colors: [stageColors[3], stageColors[2], stageColors[1]], min: 0, max: 10, h: 190, axis: true, labels: labels, bw: month ? 0.7 : 0.5,
+            grid: [{ v: 0, t: '0' }, { v: 4, t: '4 时' }, { v: 8, t: '8 时' }] }) };
+      } else if (id === 'hr') {
+        const lo = Math.min.apply(null, vals.map((d) => d[0])); const hi = Math.max.apply(null, vals.map((d) => d[1]));
+        ch = { kicker: '范围', value: lo + '–' + hi, unit: '次/分', range: rangeTxt,
+          c: this.chart({ kind: 'range', data: vals, color: 'var(--red)', min: 40, max: 170, h: 190, axis: true, labels: labels,
+            grid: [{ v: 60, t: '60' }, { v: 100, t: '100' }, { v: 140, t: '140' }] }) };
+      } else {
+        const cfg = {
+          rhr: { kind: 'dot', min: 50, max: 64, grid: [52, 56, 60], unit: '次/分', kicker: '平均' },
+          hrv: { kind: 'bar', min: 0, max: 60, grid: [0, 25, 50], unit: '毫秒', kicker: '平均' },
+          steps: { kind: 'bar', min: 0, max: 14000, grid: [0, 5000, 10000], unit: '步', kicker: '日平均' }
+        }[id];
+        ch = { kicker: cfg.kicker, value: fmt(Math.round(avg(vals))), unit: cfg.unit, range: rangeTxt,
+          c: this.chart({ kind: cfg.kind, data: vals, color: t.color, min: cfg.min, max: cfg.max, h: 190, axis: true, labels: labels, bw: month ? 0.7 : 0.5,
+            grid: cfg.grid.map((v) => ({ v: v, t: v >= 1000 ? (v / 1000) + '千' : String(v) })) }) };
+      }
+      sections.push(sec({ isChart: true, ...ch }));
+      if (id === 'sleep') {
+        sections.push(sec({ isChart: true, kicker: '昨晚 · 在床 7 小时 33 分', value: '7 小时 12 分', unit: '', range: '入睡 23:41 · 醒来 07:14',
+          c: this.chart({ kind: 'hypno', segs: segs, colors: stageColors, data: [], h: 120, axis: true, labels: ['23:41', '03:30', '07:14'], spread: true,
+            grid: stages.map((g, k) => ({ v: 100 - (k * 25 + 12.5), t: g.name, noLine: true })), min: 0, max: 100 }) }));
+        sections.push(list('睡眠阶段', stages.map((g) => ({ dot: g.color, label: g.name, detail: mins(g.m) + ' · ' + Math.round(g.m / (g.name === '清醒' ? 453 : 432) * 100) + '%' })),
+          '清醒占在床时间的比例，其余阶段占睡眠时间的比例。同一晚有多个来源时，只采用带阶段数据的来源。'));
+      } else if (id === 'hr') {
+        sections.push(list('今天', [{ label: '最近一次', detail: '71 次/分 · 09:21' }, { label: '最低', detail: '52 次/分' }, { label: '最高', detail: '128 次/分' }]));
+      } else {
+        const nums = vals;
+        const u = { rhr: ' 次/分', hrv: ' 毫秒', steps: ' 步' }[id];
+        sections.push(list(month ? '最近 30 天' : '最近 7 天', [{ label: '最低', detail: fmt(Math.min.apply(null, nums)) + u }, { label: '最高', detail: fmt(Math.max.apply(null, nums)) + u }]));
+      }
+      sections.push(list('数据来源', [{ label: id === 'steps' ? 'Apple Watch、iPhone' : 'Apple Watch', detail: '示例' }],
+        '数据直接读取自这台 iPhone 上的「健康」，不依赖服务器。所有数值为示例。'));
+    }
+
+    if (page === 'sync') {
+      sections.push(status());
+      const upl = { normal: '已上传', locked: '正在补齐', stale: '待上传', token: '待上传', unreachable: '待上传', outdated: '待上传', local: '仅本机，不上传', revoked: '已暂停', nodata: '没有记录' }[sc];
+      const typeRows = on.map((t) => sc === 'backfill'
+        ? { icon: t.icon, iconColor: t.color, fill: t.fill, label: t.name, sub: (s.prog[t.id] >= 1 ? '已完成 · ' : Math.round(t.total * s.prog[t.id]).toLocaleString('zh-CN') + ' / ') + fmt(t.total) + ' 条（示例）', bar: s.prog[t.id], pct: Math.round(s.prog[t.id] * 100) }
+        : { icon: t.icon, iconColor: t.color, fill: t.fill, label: t.name, detail: sc === 'nodata' ? '没有记录' : upl });
+      sections.push(list('数据类型', typeRows, '', true));
+      if (mode !== 'local') {
+        const last = { normal: s.justSynced ? '刚刚' : '今天 09:28', locked: '今天 00:40', stale: '昨天 08:05', token: '今天 06:12', unreachable: '今天 08:47', outdated: '11月1日 22:10', revoked: '今天 09:34', nodata: '今天 09:28', backfill: '进行中' }[sc];
+        const pending = { normal: '0 条', locked: '正在读取', stale: '正在读取', token: '1,286 条', unreachable: '214 条', outdated: '3,912 条', revoked: '已暂停', nodata: '0 条', backfill: fmt(Math.round(progTotal - progDone)) + ' 条' }[sc];
+        sections.push(list('上传', [
+          { label: '上次成功上传', detail: last }, { label: '待上传', detail: pending },
+          { label: '服务器', detail: 'health-mcp…', go: () => push('server'), chev: true }
+        ], '时间与条数为示例。'));
+      }
+      sections.push(sec({ isNote: true, text: '同步有延迟：Apple Watch 的数据要先同步到 iPhone；iPhone 锁定时无法读取健康数据；后台唤醒频率由 iOS 决定，步数等类型最快每小时一次；从后台上划关闭 App 后不会再被唤醒，需要重新打开。通常延迟几分钟到一小时，夜间睡眠一般在早上解锁后补齐。' }));
+    }
+
+    if (page === 'settings') {
+      const consentLabel = { sync: '已同意', revoked: '已撤回', local: '未同意' }[mode];
+      sections.push(list('', [
+        { square: 'var(--blue)', icon: ic.server, label: '服务器', detail: mode === 'local' ? '未连接' : 'health-mcp…', chev: mode !== 'local', go: mode === 'local' ? () => openSheet('connect') : () => push('server') }
+      ], mode === 'local' ? '本机模式：健康数据只在这台 iPhone 上显示，不会上传。' : '', true));
+      sections.push(list('数据', [
+        { square: 'var(--red)', icon: ic.list, label: '数据类型', detail: on.length + ' 项', chev: true, go: () => push('types') },
+        { square: 'var(--indigo)', icon: ic.calendar, label: '首次同步范围', detail: { '7': '7 天', '30': '30 天', '90': '90 天', '365': '1 年', all: '全部' }[s.range], chev: true, go: () => push('range'), disabled: mode === 'local' }
+      ], '', true));
+      sections.push(list('AI Agent', [
+        { square: 'var(--purple)', icon: ic.sparkle, label: '连接 AI Agent', chev: true, go: () => push('agent') }
+      ], '', true));
+      sections.push(list('隐私', [
+        { square: 'var(--green)', icon: ic.shield, label: '数据共享同意', detail: consentLabel, chev: true, go: () => push('consent') },
+        { square: 'var(--gray)', icon: ic.doc, label: '隐私政策', ext: true, go: () => this.toast('将在 Safari 中打开隐私政策') }
+      ], '', true));
+      if (mode !== 'local') {
+        sections.push(list('', [
+          { label: '删除服务器数据', red: true, go: () => push('delete') },
+          { label: '断开连接', red: true, go: () => push('disconnect') }
+        ], '删除会清空服务器上的健康数据；断开连接会停止上传并清除本机保存的地址和 Token。'));
+      }
+      sections.push(list('关于', [
+        { square: 'var(--gray)', icon: ic.hammer, label: '如何部署服务器', ext: true, go: () => this.toast('将在 Safari 中打开部署说明') },
+        { square: 'var(--gray)', icon: ic.info, label: '版本', detail: '1.0（示例）' }
+      ], '', true));
+    }
+
+    if (page === 'server') {
+      const rows = [{ label: '地址', detail: 'https://' + host, mono: true }];
+      if (!s.tokenEdit) rows.push({ label: '写入 Token', detail: '••••••••0000', go: () => this.setState({ tokenEdit: true }) });
+      sections.push(list('连接', rows, s.tokenEdit ? '' : 'Token 保存在本机钥匙串中，只用于上传和删除数据。点按 Token 可以替换。'));
+      if (s.tokenEdit) {
+        sections.push(list('替换写入 Token', [
+          { input: true, id: this.uid + '-tk', label: '新 Token', value: s.newToken, onInput: (e) => this.setState({ newToken: e.target.value }) },
+          { label: '保存并测试', blue: !!s.newToken, disabled: !s.newToken, go: () => { this.setState({ tokenEdit: false, newToken: '', scenario: sc === 'token' ? 'normal' : sc }); this.toast('已保存，连接成功'); } },
+          { label: '取消', blue: true, go: () => this.setState({ tokenEdit: false, newToken: '' }) }
+        ], '请填写部署时设置的 INGEST_TOKEN。保存后会立即测试连接。'));
+      }
+      const R = {
+        token: { icon: ic.xC, iconColor: 'var(--red)', label: 'Token 无效', sub: '服务器拒绝了这个 Token（401）。' },
+        unreachable: { icon: ic.wifiOff, iconColor: 'var(--orange)', label: '无法访问服务器', sub: '请检查网络，或确认 Worker 仍在运行。' },
+        outdated: { icon: ic.upArrow, iconColor: 'var(--orange)', label: '服务端版本需要更新', sub: '数据格式版本 0，需要 1 或更高（示例）。' }
+      }[sc] || { icon: ic.checkC, iconColor: 'var(--green)', label: '连接正常', sub: s.testing ? '' : '刚刚检查' };
+      sections.push(list('状态', [
+        R,
+        { label: s.testing ? '正在测试…' : '重新测试连接', blue: !s.testing, disabled: s.testing, go: () => {
+          this.setState({ testing: true });
+          clearTimeout(this.t1);
+          this.t1 = setTimeout(() => this.setState({ testing: false }), 900);
+        } }
+      ], '', true));
+      if (['token', 'unreachable'].indexOf(sc) < 0) {
+        sections.push(list('服务端', [{ label: '版本', detail: '0.1.0（示例）' }, { label: '数据格式版本', detail: sc === 'outdated' ? '0' : '1' }]));
+        sections.push(list('服务器上的数据', on.map((t) => ({ icon: t.icon, iconColor: t.color, fill: t.fill, label: t.name, detail: (s.deleted ? '0' : fmt(t.count)) + ' 条' })), '条数为示例。', true));
+      } else {
+        sections.push(sec({ isNote: true, text: '连接恢复后，这里会显示服务端版本和服务器上的数据条数。' }));
+      }
+    }
+
+    if (page === 'types') {
+      const local = mode === 'local';
+      sections.push(list('', T.map((t) => ({ icon: t.icon, iconColor: t.color, fill: t.fill, label: t.name, toggle: true, on: !!s.types[t.id],
+        go: () => {
+          if (s.types[t.id] && !local) { this.setState({ dialog: 'typeoff', offType: t.id }); return; }
+          this.setState({ types: { ...s.types, [t.id]: !s.types[t.id] } });
+          if (!s.types[t.id]) this.toast('将请求「健康」读取权限');
+        } })),
+      local ? '只影响本机概览。' : '关闭的类型不再上传，服务器上已有的数据会保留，也可以在关闭时选择一并删除。打开新的类型时会请求「健康」读取权限。', true));
+    }
+
+    if (page === 'range') {
+      sections.push(list('', [['7', '最近 7 天'], ['30', '最近 30 天'], ['90', '最近 90 天'], ['365', '最近 1 年'], ['all', '全部数据']].map((r) => ({
+        label: r[1], check: s.range === r[0], go: () => { this.setState({ range: r[0] }); if (r[0] !== s.range) this.toast('已更改，将补传更早的数据'); }
+      })), '扩大范围会补传更早的数据；缩小范围不会删除服务器上已有的数据。心率样本较多，范围越大，补传用时越长。'));
+    }
+
+    if (page === 'agent') {
+      if (mode === 'local') {
+        sections.push(empty({ icon: ic.server, title: '尚未连接服务器', text: '连接你的服务器后，这里会显示 MCP 地址和各个 AI Agent 客户端的配置。', btn: '连接服务器', go: () => openSheet('connect') }));
+      } else {
+        const mcp = 'https://' + host + '/mcp';
+        sections.push(list('MCP 地址', [{ label: mcp, mono: true, blue: true, go: () => this.toast('已复制 MCP 地址') }], '点按即可复制。AI Agent 用只读的 MCP_TOKEN 访问这个地址。'));
+        const clients = [['claude', 'Claude Code'], ['codex', 'Codex'], ['desktop', 'Claude Desktop'], ['json', '通用 JSON']];
+        sections.push(sec({ isSegment: true, aria: '选择客户端', options: clients.map((c) => ({
+          label: c[1], on: s.client === c[0], go: () => this.setState({ client: c[0] }),
+          style: btnBase + 'flex:1 1 40%;min-height:32px;border-radius:7px;' + fsz(13) + ';font-weight:' + (s.client === c[0] ? 600 : 400) + ';color:var(--label);background:' + (s.client === c[0] ? 'var(--seg);box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04)' : 'none')
+        })) }));
+        const code = {
+          claude: 'claude mcp add --transport http healthbridge \\\n  ' + mcp + ' \\\n  --header "Authorization: Bearer <你的 MCP_TOKEN>"',
+          codex: '# ~/.codex/config.toml\n[mcp_servers.healthbridge]\nurl = "' + mcp + '"\nbearer_token_env_var = "HEALTHBRIDGE_MCP_TOKEN"',
+          desktop: '{\n  "mcpServers": {\n    "healthbridge": {\n      "command": "npx",\n      "args": ["mcp-remote", "' + mcp + '",\n        "--header", "Authorization:${AUTH}"],\n      "env": { "AUTH": "Bearer <你的 MCP_TOKEN>" }\n    }\n  }\n}',
+          json: '{\n  "mcpServers": {\n    "healthbridge": {\n      "type": "http",\n      "url": "' + mcp + '",\n      "headers": {\n        "Authorization": "Bearer <你的 MCP_TOKEN>"\n      }\n    }\n  }\n}'
+        }[s.client];
+        const foot = {
+          claude: '在终端中运行这条命令。',
+          codex: '把这段加到 ~/.codex/config.toml，并在环境变量 HEALTHBRIDGE_MCP_TOKEN 中设置你的 MCP_TOKEN。',
+          desktop: '加到 claude_desktop_config.json。通过 mcp-remote 转接，需要电脑已安装 Node.js。',
+          json: '适用于支持远程 HTTP MCP 和自定义请求头的客户端。'
+        }[s.client];
+        sections.push(sec({ isCode: true, header: '配置', code: code, footer: foot + ' 配置格式以各客户端的最新文档为准。', copy: () => this.toast('已复制配置'), share: () => this.toast('将打开系统分享面板') }));
+        sections.push(list('', [{ icon: ic.info, iconColor: 'var(--blue)', label: '关于 MCP_TOKEN', sub: 'MCP_TOKEN 是部署时设置的只读 Token，只保存在你的 Cloudflare 中，HealthBridge 不保存它。请把配置里的 <你的 MCP_TOKEN> 换成它。' }], '', true));
+      }
+    }
+
+    if (page === 'consent') {
+      if (mode === 'local') {
+        sections.push(list('', [{ label: '状态', detail: '未同意' }], '本机模式不会上传任何数据。连接服务器时，会请你确认数据共享。'));
+        sections.push(list('', [{ label: '连接服务器', blue: true, go: () => openSheet('connect') }]));
+      } else {
+        sections.push(list('', mode === 'revoked'
+          ? [{ label: '状态', detail: '已撤回' }, { label: '撤回时间', detail: '2026年11月3日 09:35' }]
+          : [{ label: '状态', detail: '已同意' }, { label: '同意时间', detail: s.consentAt }], '时间为示例。'));
+        sections.push(list('你同意的内容', [
+          { icon: ic.server, iconColor: 'var(--blue)', label: '发送到哪里', sub: '你的服务器 ' + host + '，运行在你自己的 Cloudflare 账号中。' },
+          { icon: ic.heart, iconColor: 'var(--red)', fill: 'currentColor', label: '发送哪些数据', sub: '你选择的健康数据类型，包括时间、数值和记录设备的名称。' },
+          { icon: ic.sparkle, iconColor: 'var(--indigo)', label: '谁可能读取', sub: '你接入这台服务器的第三方 AI Agent，例如 Claude、Codex。' },
+          { icon: ic.shield, iconColor: 'var(--gray)', label: '开发者', sub: 'HealthBridge 的开发者无法访问你的服务器和数据。' }
+        ], '', true));
+        sections.push(mode === 'revoked'
+          ? list('', [{ label: '重新同意', blue: true, go: () => openSheet('consent') }], '服务器上已有的数据仍保留，已接入的 AI Agent 仍可读取。如需阻止，请删除服务器数据，或在 Cloudflare 中更换 MCP_TOKEN。')
+          : list('', [{ label: '撤回同意', red: true, go: () => this.setState({ dialog: 'revoke' }) }], '撤回后 App 立即停止上传。服务器上已有的数据不会自动删除。'));
+      }
+    }
+
+    if (page === 'delete') {
+      const blocked = ['token', 'unreachable'].indexOf(sc) >= 0;
+      if (s.deleted) {
+        sections.push(empty({ icon: ic.checkC, title: '服务器上的数据已删除', text: '之后产生的新数据会继续上传。如果不想再上传，请撤回数据共享同意或断开连接。' }));
+      } else {
+        sections.push(sec({ isNote: true, text: '删除 HealthBridge 上传到你服务器上的全部健康数据。此操作无法撤销，「健康」App 里的数据不受影响。' }));
+        sections.push(list('将删除', on.map((t) => ({ icon: t.icon, iconColor: t.color, fill: t.fill, label: t.name, detail: fmt(t.count) + ' 条' }))
+          .concat([{ label: '合计', detail: fmt(totalCount) + ' 条' }]), '条数为示例。', true));
+        sections.push(list('', [{ label: '删除服务器上的全部数据', red: !blocked, disabled: blocked, go: blocked ? null : () => this.setState({ dialog: 'delete' }) }],
+          blocked ? '当前无法连接服务器或 Token 无效，暂时无法删除。' : '删除后，之后产生的新数据仍会继续上传。'));
+      }
+    }
+
+    if (page === 'disconnect') {
+      sections.push(sec({ isNote: true, text: '断开后，App 停止上传，并清除本机保存的服务器地址、写入 Token 和同步进度，回到本机模式。概览仍可使用。' }));
+      sections.push(list('', [{ label: '同时删除服务器上的数据', toggle: true, on: s.alsoDelete, go: () => this.setState({ alsoDelete: !s.alsoDelete }) }],
+        s.alsoDelete ? '会先删除服务器上的全部健康数据（示例：' + fmt(totalCount) + ' 条），再断开连接。' : '服务器上的数据会保留。断开后 App 不再保存 Token，就无法从 App 中删除这些数据了。'));
+      sections.push(list('', [{ label: '断开连接', red: true, go: () => this.setState({ dialog: 'disconnect' }) }]));
+    }
+
+    const closeDialog = () => this.setState({ dialog: null });
+    const offT = T.find((t) => t.id === s.offType) || T[1];
+    const D = {
+      revoke: { kind: 'sheet', title: '撤回数据共享同意？', message: '撤回后 App 会立即停止上传，服务器地址和 Token 仍保留在本机。服务器上已有的数据不会删除，已接入的 AI Agent 仍可读取；如需阻止，请删除服务器数据，或在 Cloudflare 中更换 MCP_TOKEN。',
+        actions: [{ label: '撤回同意', red: true, go: () => { this.setState({ dialog: null, scenario: 'revoked' }); this.toast('已撤回同意，同步已暂停'); } }] },
+      typeoff: { kind: 'sheet', title: '停止同步“' + offT.name + '”？', message: '之后产生的' + offT.name + '数据不再上传。',
+        actions: [
+          { label: '停止同步，保留服务器上的数据', go: () => this.setState({ dialog: null, types: { ...s.types, [offT.id]: false } }) },
+          { label: '停止同步并删除服务器上的' + offT.name + '数据', red: true, go: () => { this.setState({ dialog: null, types: { ...s.types, [offT.id]: false } }); this.toast('已删除服务器上的' + offT.name + '数据'); } }
+        ] },
+      delete: { kind: 'alert', title: '删除 ' + fmt(totalCount) + ' 条数据？', message: '将从 ' + host + ' 删除全部健康数据。此操作无法撤销。',
+        actions: [{ label: '取消', bold: true, go: closeDialog }, { label: '删除', red: true, go: () => { this.setState({ dialog: null, deleted: true }); this.toast('已删除服务器上的数据'); } }] },
+      disconnect: { kind: 'alert', title: s.alsoDelete ? '删除数据并断开连接？' : '断开连接？',
+        message: s.alsoDelete ? '会先删除服务器上的全部健康数据，再清除本机保存的地址和 Token。此操作无法撤销。' : '将停止上传，并清除本机保存的服务器地址、Token 和同步进度。服务器上的数据会保留。',
+        actions: [{ label: '取消', bold: true, go: closeDialog }, { label: s.alsoDelete ? '删除并断开' : '断开连接', red: true, go: () => {
+          this.setState({ dialog: null, scenario: 'local', tab: 'settings', stacks: { overview: [], sync: [], settings: [] } });
+          this.toast('已断开连接，现在是本机模式');
+        } }] }
+    };
+    const dd = D[s.dialog];
+    const dlg = { isAlert: !!dd && dd.kind === 'alert', isSheet: !!dd && dd.kind === 'sheet', title: '', message: '', actions: [], rowStyle: '' };
+    if (dd) {
+      const horiz = dd.kind === 'alert' && dd.actions.length === 2;
+      dlg.title = dd.title; dlg.message = dd.message;
+      dlg.rowStyle = horiz ? 'display:flex;border-top:.5px solid var(--sep)' : 'display:flex;flex-direction:column';
+      dlg.actions = dd.actions.map((a, i) => ({ label: a.label, go: a.go,
+        style: btnBase + 'flex:1;min-height:' + (dd.kind === 'sheet' ? 57 : 44) + 'px;padding:8px 12px;background:none;' + fsz(dd.kind === 'sheet' ? 20 : 17) + ';font-weight:' + (a.bold ? 600 : 400) + ';color:' + (a.red ? 'var(--red)' : 'var(--blue)') +
+          (dd.kind === 'sheet' ? ';border-top:.5px solid var(--sep)' : (horiz && i > 0 ? ';border-left:.5px solid var(--sep)' : '')) }));
+    }
+
+    const isRoot = stack.length === 0;
+    const tabs = [['overview', '概览', ic.overview], ['sync', '同步', ic.sync], ['settings', '设置', ic.gear]].map((t) => ({
+      label: t[1], icon: t[2], current: s.tab === t[0] ? 'page' : 'false', go: () => goTab(t[0]),
+      style: btnBase + 'flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:54px;padding:7px 4px;border-radius:28px;font-size:calc(11px * var(--fs));font-weight:600;background:transparent;color:' + (s.tab === t[0] ? 'var(--blue)' : 'var(--label2)')
+    }));
+    return {
+      helpEnter: (e) => { if (!e.currentTarget.dataset.dismissed) e.currentTarget.open = true; },
+      helpLeave: (e) => { delete e.currentTarget.dataset.dismissed; if (!e.currentTarget.contains(e.currentTarget.ownerDocument.activeElement)) e.currentTarget.open = false; },
+      helpKey: (e) => { if (e.key === 'Escape') { e.currentTarget.open = false; e.currentTarget.dataset.dismissed = 'true'; } },
+      pageKey:page, rootStyle: th.root + ';--tab-offset:' + (['overview','sync','settings'].indexOf(s.tab)*100) + '%', st: st, ic: ic, sections: sections.map((x) => {
+        if (!x.isNote) return x;
+        const critical = /撤回|断开|删除|停止|同意/.test(x.text);
+        return { ...x, isNote: !critical, isCriticalNote: critical, helpLabel: page === 'sync' ? '为什么同步会有延迟？' : '数据说明' };
+      }), tabs: tabs, dlg: dlg, closeDialog: closeDialog,
+      nav: { large: isRoot, title: titleOf(page), inline: isRoot ? '' : titleOf(page), back: !isRoot, backLabel: titleOf(stack.length > 1 ? stack[stack.length - 2] : s.tab) },
+      pop: () => this.setState({ stacks: { ...s.stacks, [s.tab]: stack.slice(0, -1) }, tokenEdit: false }),
+      toastOn: !!s.toast, toast: s.toast,
+      sheetOn: !!s.sheet, sheetStart: s.sheet === 'consent' ? 'consent' : 'connect', sheetReconsent: s.sheet === 'consent',
+      darkProp: th.dark, scaleProp: String(th.fs), deviceProp: th.se ? 'se' : '6.1',
+      sheetFinish: () => {
+        const k = s.sheet;
+        this.setState({ sheet: null, scenario: k === 'consent' ? 'normal' : 'backfill', justSynced: false, stacks: { overview: [], sync: [], settings: [] }, tab: k === 'consent' ? s.tab : 'sync' });
+        if (k === 'consent') this.toast('已恢复同步');
+        else this.runBackfill(true);
+      },
+      sheetCancel: () => this.setState({ sheet: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

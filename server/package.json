@@ -1,0 +1,30 @@
+{
+  "name": "@healthbridge/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --config ../wrangler.jsonc --local --var CONNECT_PASSWORD:synthetic-local-password --var INGEST_TOKEN:synthetic-local-ingest --var MCP_TOKEN:synthetic-local-mcp",
+    "types": "wrangler types --config ../wrangler.jsonc",
+    "typecheck": "npm run types && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "wrangler deploy --config ../wrangler.jsonc --dry-run --outdir dist",
+    "deploy": "node ../scripts/deploy.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.5.0",
+    "@types/node": "^24.19.2",
+    "@types/qrcode": "^1.5.6",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.12",
+    "wrangler": "^4.156.2"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "^2.4.0",
+    "@modelcontextprotocol/server": "^2.4.0",
+    "agents": "^0.32.0",
+    "qrcode": "^1.5.4",
+    "zod": "^4.6.6"
+  }
+}

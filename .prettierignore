@@ -1,0 +1,10 @@
+node_modules/
+package-lock.json
+server/worker-configuration.d.ts
+.agents/
+.claude/
+designs/
+HealthBridge-开发方案.md
+docs/design/
+.wrangler/
+dist/

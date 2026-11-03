@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>引导：同步模式主路径</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 2678px; height: 968px; box-sizing: border-box; padding: 40px; display: flex; gap: 48px; align-items: flex-start; background: #E5E5EA; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; color: #1C1C1E">
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">O1 介绍</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Onboarding" start="intro" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">O2 连接服务器 · 连接成功</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Onboarding" start="connect" result="ok" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">O3 数据共享同意（独立页面）</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Onboarding" start="consent" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">O4 数据类型与首次同步范围</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Onboarding" start="types" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">O5 HealthKit 授权（系统表单示意）</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Onboarding" start="health" sheet="{{true}}" hint-size="393px,852px"></dc-import></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 393px">
+<div style="font-size: 16px; font-weight: 600; line-height: 24px">O6 首次同步进度</div>
+<div style="width: 393px; height: 852px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1)"><dc-import name="Onboarding" start="progress" hint-size="393px,852px"></dc-import></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2678,"height":968}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

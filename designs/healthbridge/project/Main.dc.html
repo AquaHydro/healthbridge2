@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>HealthBridge 可交互原型</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#007AFF}a:hover{color:#0062CC}
+</style>
+</helmet>
+<div style="width: 393px; height: 852px; overflow: hidden; background: #8E8E93">
+<sc-if value="{{onboarding}}" hint-placeholder-val="{{true}}">
+<dc-import name="Onboarding" dark="{{dark}}" text-scale="{{scale}}" device="{{device}}" on-finish="{{finish}}" hint-size="393px,852px"></dc-import>
+</sc-if>
+<sc-if value="{{home}}" hint-placeholder-val="{{false}}">
+<dc-import name="Home" scenario="{{scenario}}" dark="{{dark}}" text-scale="{{scale}}" device="{{device}}" hint-size="393px,852px"></dc-import>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false,"section":"显示"},"textSize":{"editor":"enum","options":["默认","较大","辅助功能"],"default":"默认","section":"显示"},"device":{"editor":"enum","options":["iPhone 6.1 英寸","iPhone SE"],"default":"iPhone 6.1 英寸","section":"显示"},"$preview":{"width":393,"height":852}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { phase: 'onboarding', scenario: 'normal' };
+  }
+  renderVals() {
+    const scales = { '默认': 1, '较大': 1.35, '辅助功能': 1.65 };
+    return {
+      dark: this.props.dark === true,
+      scale: scales[this.props.textSize] || 1,
+      device: this.props.device === 'iPhone SE' ? 'se' : '6.1',
+      onboarding: this.state.phase === 'onboarding',
+      home: this.state.phase === 'home',
+      scenario: this.state.scenario,
+      finish: (r) => this.setState({
+        phase: 'home',
+        scenario: r && r.mode === 'local' ? 'local' : (r && r.background ? 'backfill' : 'normal')
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
